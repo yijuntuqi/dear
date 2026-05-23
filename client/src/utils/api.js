@@ -16,9 +16,9 @@ async function request(url, options = {}) {
 }
 
 export const authAPI = {
-    register: (email, password) => request('/auth/register', {
+    register: (email, password, nickname) => request('/auth/register', {
         method: 'POST',
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password, username: nickname })
     }),
     login: (email, password) => request('/auth/login', {
         method: 'POST',
@@ -59,5 +59,6 @@ export const aiAPI = {
 
 export const exportAPI = {
     downloadSource: (projectId) => `${API_BASE}/export/source/${projectId}`,
-    downloadHTML: (projectId) => `${API_BASE}/export/html/${projectId}`
+    downloadHTML: (projectId) => `${API_BASE}/export/html/${projectId}`,
+    preview: (projectId) => `${API_BASE}/export/preview/${projectId}`
 };

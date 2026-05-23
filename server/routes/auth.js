@@ -9,7 +9,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'dear-secret';
 // 注册
 router.post('/register', async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { email, password, username } = req.body;
         
         if (!email || !password) {
             return res.status(400).json({ error: '请填写邮箱和密码' });
@@ -21,11 +21,12 @@ router.post('/register', async (req, res) => {
         }
         
         const passwordHash = await bcrypt.hash(password, 10);
-        const user = await userDB.createUser(email, passwordHash);
+        const user = await userDB.createUser(email, passwordHash, username);
         const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '30d' });
         
         res.json({ success: true, user, token });
     } catch (error) {
+        console.error('注册失败:', error);
         res.status(500).json({ error: '注册失败' });
     }
 });

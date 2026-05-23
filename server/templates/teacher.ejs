@@ -42,7 +42,36 @@
             text-align: center;
             margin: 40px 0;
         }
-        .footer { text-align: center; padding: 40px 0; color: #e65100; }
+        /* 留言区左对齐 */
+		.message-section p {
+			text-align: left;
+			white-space: pre-wrap;
+		}
+
+		/* 签名区 */
+		.signature-area {
+			text-align: right;
+			margin-top: 60px;
+			padding: 30px 0;
+			border-top: 1px solid #f0e0e5;
+		}
+		.signature-area .signature-name {
+			font-size: 1.3em;
+			font-weight: bold;
+		}
+		.signature-area .signature-date {
+			font-size: 0.9em;
+			opacity: 0.7;
+			margin-top: 5px;
+		}
+
+		/* 底部版权 */
+		.footer-line {
+			text-align: center;
+			padding: 40px 0 20px;
+			font-size: 0.9em;
+			opacity: 0.6;
+		}
     </style>
 </head>
 <body>
@@ -72,8 +101,18 @@
         </section>
         <% } %>
         
+		<!-- 签名区 -->
+		<section class="signature-area">
+			<% if (data.basic_info && data.basic_info.authorName) { %>
+				<p class="signature-name"><%= data.basic_info.authorName %></p>
+			<% } else { %>
+				<p class="signature-name">爱你的人</p>
+			<% } %>
+			<p class="signature-date"><%= new Date().toLocaleDateString('zh-CN', {year:'numeric', month:'long', day:'numeric'}) %></p>
+		</section>
+
         <footer class="footer">
-            <p>Made with 📚 by Dear</p>
+            <p class="footer-line">Made with <span class="heart">❤️</span> by Dear</p>
         </footer>
     </div>
 </body>

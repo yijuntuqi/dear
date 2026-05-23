@@ -5,27 +5,23 @@ import './StepDownload.css';
 function StepDownload({ project, generatedHtml }) {
     const [downloading, setDownloading] = useState(false);
     
-    const handleDownloadZip = async () => {
-        setDownloading(true);
-        try {
-            window.open(exportAPI.downloadSource(project.id), '_blank');
-        } catch (err) {
-            alert('下载失败：' + err.message);
-        }
-        setDownloading(false);
-    };
-    
-    const handleDownloadHTML = () => {
-        window.open(exportAPI.downloadHTML(project.id), '_blank');
-    };
-    
-    const handleCopyHTML = () => {
-        navigator.clipboard.writeText(generatedHtml).then(() => {
-            alert('HTML代码已复制到剪贴板！');
-        }).catch(() => {
-            alert('复制失败，请尝试下载HTML文件');
-        });
-    };
+    const handleDownloadZip = () => {
+		const link = document.createElement('a');
+		link.href = exportAPI.downloadSource(project.id);
+		link.download = `Dear_${project.owner_name}_源码包.zip`;
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+	};
+
+	const handleDownloadHTML = () => {
+		const link = document.createElement('a');
+		link.href = exportAPI.downloadHTML(project.id);
+		link.download = `Dear_${project.owner_name}.html`;
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+	};
     
     return (
         <div className="step-download">

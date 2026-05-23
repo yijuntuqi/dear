@@ -60,24 +60,45 @@
             color: white;
             border-radius: 20px;
             padding: 40px;
-            text-align: center;
             margin: 40px 0;
         }
         .message-section h2 {
             margin-bottom: 20px;
+            text-align: center;
         }
         .message-section p {
-            font-size: 1.2em;
+            font-size: 1.15em;
             line-height: 2;
+            text-align: left;           /* ← 左对齐 */
+            white-space: pre-wrap;       /* ← 保留换行 */
         }
-        .footer {
-            text-align: center;
-            padding: 40px 0;
-            color: #999;
+        
+        /* ============ 签名区 ============ */
+        .signature-area {
+            text-align: right;
+            margin-top: 60px;
+            padding: 30px 0;
+            border-top: 1px solid #f0e0e5;
         }
-        .footer .heart {
+        .signature-area .signature-name {
+            font-size: 1.3em;
             color: #ff6b8a;
-            font-size: 1.5em;
+            font-weight: bold;
+        }
+        .signature-area .signature-date {
+            font-size: 0.9em;
+            color: #999;
+            margin-top: 5px;
+        }
+        
+        .footer-line {
+            text-align: center;
+            padding: 40px 0 20px;
+            color: #bbb;
+            font-size: 0.9em;
+        }
+        .footer-line .heart {
+            color: #ff6b8a;
         }
     </style>
 </head>
@@ -85,9 +106,7 @@
     <div class="page">
         <section class="hero">
             <h1><%= data.owner_name %></h1>
-            <% if (data.dedication) { %>
-				<p class="dedication"><%= data.dedication %></p>
-			<% } %>
+            <p class="relation"><%= data.dedication || '重要的人' %></p>
             <% if (data.basic_info && data.basic_info.intro) { %>
                 <p class="intro"><%= data.basic_info.intro %></p>
             <% } %>
@@ -111,10 +130,17 @@
         </section>
         <% } %>
         
-        <footer class="footer">
-            <p>Made with <span class="heart">❤️</span> by Dear</p>
-            <p>Created on <%= new Date().toLocaleDateString('zh-CN') %></p>
-        </footer>
+        <!-- 签名区 -->
+        <section class="signature-area">
+            <% if (data.basic_info && data.basic_info.authorName) { %>
+                <p class="signature-name"><%= data.basic_info.authorName %></p>
+            <% } else { %>
+                <p class="signature-name">爱你的人</p>
+            <% } %>
+            <p class="signature-date"><%= new Date().toLocaleDateString('zh-CN', {year:'numeric', month:'long', day:'numeric'}) %></p>
+        </section>
+        
+        <p class="footer-line">Made with <span class="heart">❤️</span> by Dear</p>
     </div>
 </body>
 </html>

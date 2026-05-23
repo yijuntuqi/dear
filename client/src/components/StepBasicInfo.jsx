@@ -83,6 +83,20 @@ function StepBasicInfo({ formData, updateForm, onNext }) {
                 />
             </div>
             
+			<div className="form-group">
+				<label>你的署名（选填）</label>
+				<input
+					type="text"
+					value={formData.basicInfo?.authorName || ''}
+					onChange={e => updateForm('basicInfo', { ...formData.basicInfo, authorName: e.target.value })}
+					placeholder="网页右下角会显示你的署名，如：永远爱你的女儿"
+					maxLength={30}
+				/>
+				<small style={{ color: '#999', display: 'block', marginTop: 5 }}>
+					这将在网页右下角签名区展示
+				</small>
+			</div>
+
             <div className="step-actions">
                 <button className="btn btn-primary" onClick={onNext} disabled={!canNext}>
                     下一步 → 填写内容

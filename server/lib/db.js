@@ -15,14 +15,14 @@ async function testConnection() {
 
 // 用户操作
 const userDB = {
-    async createUser(email, passwordHash) {
-        const result = await sql`
-            INSERT INTO users (email, password_hash)
-            VALUES (${email}, ${passwordHash})
-            RETURNING id, email, plan_type, created_at
-        `;
-        return result[0];
-    },
+    async createUser(email, passwordHash, username) {
+		const result = await sql`
+			INSERT INTO users (email, password_hash, username)
+			VALUES (${email}, ${passwordHash}, ${username || email.split('@')[0]})
+			RETURNING id, email, username, plan_type, created_at
+		`;
+		return result[0];
+	},
     
     async findByEmail(email) {
         const result = await sql`

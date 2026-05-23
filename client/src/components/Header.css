@@ -38,3 +38,92 @@
     color: #999;
     font-size: 0.85em;
 }
+/* 弹窗样式 */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    position: relative;
+    width: 400px;
+    max-width: 90vw;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+}
+
+.modal-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 1.2em;
+    cursor: pointer;
+    color: #999;
+}
+
+.auth-modal h2 {
+    text-align: center;
+    color: #4a4a4a;
+    margin-bottom: 25px;
+}
+
+.auth-modal .form-group {
+    margin-bottom: 20px;
+}
+
+.auth-modal .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #4a4a4a;
+}
+
+.auth-modal .form-group input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #eee;
+    border-radius: 10px;
+    font-size: 1em;
+    transition: border-color 0.3s;
+}
+
+.auth-modal .form-group input:focus {
+    outline: none;
+    border-color: #ff6b8a;
+}
+
+.auth-error {
+    color: #e74c3c;
+    font-size: 0.9em;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.auth-switch {
+    text-align: center;
+    margin-top: 20px;
+    color: #999;
+    font-size: 0.9em;
+}
+
+.btn-link {
+    background: none;
+    border: none;
+    color: #ff6b8a;
+    cursor: pointer;
+    font-size: 0.95em;
+    text-decoration: underline;
+    margin-left: 5px;
+}
