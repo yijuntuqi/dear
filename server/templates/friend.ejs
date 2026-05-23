@@ -48,7 +48,9 @@
     <div class="page">
         <section class="hero">
             <h1><%= data.owner_name %></h1>
-            <p class="intro">我最好的朋友 🌟</p>
+            <% if (data.dedication) { %>
+				<p class="intro"><%= data.dedication %></p>
+			<% } %>
         </section>
         
         <% if (data.stories && data.stories.length > 0) { %>

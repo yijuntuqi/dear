@@ -8,61 +8,46 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
-            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%);
-            color: #5d3a4a;
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            color: #5d4037;
             min-height: 100vh;
         }
-        .page {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 40px 20px;
-        }
+        .page { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
         .hero {
             text-align: center;
             padding: 80px 0 60px;
-            position: relative;
-        }
-        .hero::before {
-            content: '💕';
-            font-size: 4em;
-            display: block;
-            margin-bottom: 20px;
-            animation: float 3s ease-in-out infinite;
-        }
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
         }
         .hero h1 {
             font-size: 3em;
-            background: linear-gradient(135deg, #e91e63, #f06292);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: #e65100;
             margin-bottom: 10px;
         }
-        .hero .intro {
-            font-size: 1.2em;
-            color: #ad1457;
+        .hero .dedication {
+            font-size: 1.3em;
+            color: #bf360c;
+            margin-top: 15px;
+            font-style: italic;
         }
         .stories { margin: 40px 0; }
         .story {
-            background: rgba(255,255,255,0.8);
+            background: white;
             border-radius: 20px;
             padding: 30px;
             margin-bottom: 20px;
-            border-left: 4px solid #e91e63;
+            border-left: 4px solid #ff9800;
+            box-shadow: 0 2px 15px rgba(255,152,0,0.15);
         }
-        .story h3 { color: #e91e63; margin-bottom: 15px; }
+        .story h3 { color: #e65100; margin-bottom: 15px; }
         .story p { line-height: 1.8; }
         .message-section {
-            background: linear-gradient(135deg, #e91e63, #f06292);
+            background: linear-gradient(135deg, #ff9800, #f57c00);
             color: white;
             border-radius: 20px;
             padding: 40px;
             text-align: center;
             margin: 40px 0;
         }
-        .footer { text-align: center; padding: 40px 0; color: #ad1457; }
+        .footer { text-align: center; padding: 40px 0; color: #bf360c; }
     </style>
 </head>
 <body>
@@ -70,15 +55,15 @@
         <section class="hero">
             <h1><%= data.owner_name %></h1>
             <% if (data.dedication) { %>
-				<p class="intro"><%= data.dedication %></p>
-			<% } %>
+                <p class="dedication"><%= data.dedication %></p>
+            <% } %>
         </section>
         
         <% if (data.stories && data.stories.length > 0) { %>
         <section class="stories">
             <% data.stories.forEach(function(story) { %>
                 <div class="story">
-                    <h3>💕 <%= story.title %></h3>
+                    <h3>🧡 <%= story.title %></h3>
                     <p><%= story.content %></p>
                 </div>
             <% }); %>
@@ -93,7 +78,7 @@
         <% } %>
         
         <footer class="footer">
-            <p>Made with 💕 by Dear</p>
+            <p>Made with 🧡 by Dear</p>
         </footer>
     </div>
 </body>

@@ -1,0 +1,40 @@
+.header {
+    background: white;
+    box-shadow: 0 1px 10px rgba(0,0,0,0.05);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+.header-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.logo {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #ff6b8a;
+    text-decoration: none;
+}
+.nav { display: flex; align-items: center; gap: 20px; }
+.nav a {
+    color: #666;
+    text-decoration: none;
+    font-size: 0.95em;
+    transition: color 0.3s;
+}
+.nav a:hover { color: #ff6b8a; }
+.btn-small { padding: 8px 20px; font-size: 14px; }
+.user-email { color: #999; font-size: 0.9em; }
+.btn-logout {
+    padding: 6px 15px;
+    border: 1px solid #ddd;
+    background: white;
+    border-radius: 20px;
+    cursor: pointer;
+    color: #999;
+    font-size: 0.85em;
+}

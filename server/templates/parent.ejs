@@ -85,10 +85,9 @@
     <div class="page">
         <section class="hero">
             <h1><%= data.owner_name %></h1>
-            <p class="relation">
-                <% const relationMap = {parent: '亲爱的爸爸/妈妈', lover: '最爱的伴侣', friend: '最好的朋友', teacher: '敬爱的老师'}; %>
-                <%= relationMap[data.relationship] || '重要的人' %>
-            </p>
+            <% if (data.dedication) { %>
+				<p class="dedication"><%= data.dedication %></p>
+			<% } %>
             <% if (data.basic_info && data.basic_info.intro) { %>
                 <p class="intro"><%= data.basic_info.intro %></p>
             <% } %>
