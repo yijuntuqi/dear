@@ -1,0 +1,82 @@
+.create-page {
+    padding: 40px 20px;
+}
+
+/* 步骤指示器 */
+.step-indicator {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+    margin-bottom: 50px;
+    position: relative;
+}
+
+.step-indicator::before {
+    content: '';
+    position: absolute;
+    top: 18px;
+    left: 15%;
+    right: 15%;
+    height: 2px;
+    background: #eee;
+    z-index: 0;
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+    z-index: 1;
+}
+
+.step-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #eee;
+    color: #999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.9em;
+    transition: all 0.3s;
+}
+
+.step span {
+    font-size: 0.85em;
+    color: #999;
+    transition: color 0.3s;
+}
+
+.step.active .step-circle {
+    background: linear-gradient(135deg, #ff6b8a, #ffa3b5);
+    color: white;
+}
+
+.step.active span {
+    color: #ff6b8a;
+    font-weight: 600;
+}
+
+.step-content {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.05);
+}
+
+@media (max-width: 768px) {
+    .step-indicator {
+        gap: 15px;
+    }
+    .step-content {
+        padding: 25px 15px;
+    }
+    .step span {
+        font-size: 0.7em;
+    }
+}

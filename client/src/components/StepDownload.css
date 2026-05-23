@@ -1,0 +1,70 @@
+.step-download {
+    max-width: 700px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.step-download h2 {
+    font-size: 2em;
+    color: #4a4a4a;
+    margin-bottom: 10px;
+}
+
+.download-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin: 40px 0;
+}
+
+.download-card {
+    text-align: center;
+    padding: 30px 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.download-card:hover {
+    transform: translateY(-5px);
+    border-color: #ff6b8a;
+}
+
+.download-icon {
+    font-size: 3em;
+    display: block;
+    margin-bottom: 15px;
+}
+
+.download-card h3 {
+    font-size: 1.1em;
+    color: #4a4a4a;
+    margin-bottom: 10px;
+}
+
+.download-card p {
+    font-size: 0.85em;
+    color: #999;
+}
+
+.upgrade-notice {
+    background: linear-gradient(135deg, #fff5f7, #ffe0e6);
+    border: 2px solid #ff6b8a;
+    padding: 30px;
+    margin-top: 40px;
+}
+
+.upgrade-notice h3 {
+    color: #ff6b8a;
+    margin-bottom: 15px;
+}
+
+.upgrade-notice p {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 600px) {
+    .download-options {
+        grid-template-columns: 1fr;
+    }
+}

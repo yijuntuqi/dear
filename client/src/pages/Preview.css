@@ -1,0 +1,19 @@
+.preview-page {
+    width: 100%;
+    height: calc(100vh - 60px);
+}
+
+.preview-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50vh;
+    font-size: 1.2em;
+    color: #999;
+}

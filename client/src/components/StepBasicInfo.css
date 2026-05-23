@@ -1,0 +1,148 @@
+.step-basic-info {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.step-basic-info h2 {
+    font-size: 1.8em;
+    color: #4a4a4a;
+    margin-bottom: 10px;
+}
+
+.step-desc {
+    color: #999;
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 1.05em;
+    font-weight: 600;
+    color: #4a4a4a;
+    margin-bottom: 10px;
+}
+
+.form-group input[type="text"],
+.form-group textarea {
+    width: 100%;
+    padding: 14px 18px;
+    border: 2px solid #eee;
+    border-radius: 12px;
+    font-size: 1em;
+    font-family: inherit;
+    transition: border-color 0.3s;
+    background: #fafafa;
+}
+
+.form-group input[type="text"]:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #ff6b8a;
+    background: white;
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* 关系选择网格 */
+.relationship-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.rel-card {
+    padding: 15px;
+    border: 2px solid #eee;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+}
+
+.rel-card:hover {
+    border-color: #ffa3b5;
+    background: #fff5f7;
+}
+
+.rel-card.selected {
+    border-color: #ff6b8a;
+    background: linear-gradient(135deg, #fff5f7, #ffe0e6);
+}
+
+.rel-label {
+    display: block;
+    font-weight: 600;
+    color: #4a4a4a;
+    margin-bottom: 5px;
+}
+
+.rel-desc {
+    display: block;
+    font-size: 0.8em;
+    color: #999;
+}
+
+/* 主题选择网格 */
+.theme-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.theme-card {
+    padding: 15px;
+    border: 2px solid #eee;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+}
+
+.theme-card:hover {
+    border-color: #ffa3b5;
+    background: #fff5f7;
+}
+
+.theme-card.selected {
+    border-color: #ff6b8a;
+    background: linear-gradient(135deg, #fff5f7, #ffe0e6);
+}
+
+.theme-label {
+    display: block;
+    font-weight: 600;
+    color: #4a4a4a;
+    margin-bottom: 5px;
+}
+
+.theme-desc {
+    display: block;
+    font-size: 0.8em;
+    color: #999;
+}
+
+.step-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 40px;
+}
+
+.step-actions .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+@media (max-width: 500px) {
+    .relationship-grid,
+    .theme-grid {
+        grid-template-columns: 1fr;
+    }
+}
