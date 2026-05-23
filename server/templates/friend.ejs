@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dear <%= data.owner_name %> - 专属纪念页</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            color: #2e4a3a;
+            min-height: 100vh;
+        }
+        .page { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+        .hero {
+            text-align: center;
+            padding: 80px 0 60px;
+        }
+        .hero h1 {
+            font-size: 3em;
+            color: #43a047;
+            margin-bottom: 10px;
+        }
+        .hero .intro { font-size: 1.2em; color: #388e3c; }
+        .stories { margin: 40px 0; }
+        .story {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 15px rgba(76,175,80,0.15);
+        }
+        .story h3 { color: #43a047; margin-bottom: 15px; }
+        .story p { line-height: 1.8; }
+        .message-section {
+            background: linear-gradient(135deg, #43a047, #66bb6a);
+            color: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            margin: 40px 0;
+        }
+        .footer { text-align: center; padding: 40px 0; color: #388e3c; }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <section class="hero">
+            <h1><%= data.owner_name %></h1>
+            <p class="intro">我最好的朋友 🌟</p>
+        </section>
+        
+        <% if (data.stories && data.stories.length > 0) { %>
+        <section class="stories">
+            <% data.stories.forEach(function(story) { %>
+                <div class="story">
+                    <h3>🌟 <%= story.title %></h3>
+                    <p><%= story.content %></p>
+                </div>
+            <% }); %>
+        </section>
+        <% } %>
+        
+        <% if (data.message) { %>
+        <section class="message-section">
+            <h2>💬 想对你说</h2>
+            <p><%= data.message %></p>
+        </section>
+        <% } %>
+        
+        <footer class="footer">
+            <p>Made with 🌟 by Dear</p>
+        </footer>
+    </div>
+</body>
+</html>
