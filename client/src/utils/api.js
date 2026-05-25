@@ -16,13 +16,13 @@ async function request(url, options = {}) {
 }
 
 export const authAPI = {
-    register: (email, password, nickname) => request('/auth/register', {
+    register: (nickname, phone, email, password) => request('/auth/register', {
         method: 'POST',
-        body: JSON.stringify({ email, password, username: nickname })
+        body: JSON.stringify({ nickname, phone, email, password })
     }),
-    login: (email, password) => request('/auth/login', {
+    login: (phone, password) => request('/auth/login', {
         method: 'POST',
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ phone, password })
     }),
     me: () => request('/auth/me')
 };

@@ -127,3 +127,79 @@
     text-decoration: underline;
     margin-left: 5px;
 }
+/* 必填标记 */
+.required { color: #e74c3c; }
+.optional { color: #999; font-weight: normal; font-size: 0.85em; }
+
+/* 密码可见切换 */
+.password-input-wrapper {
+    position: relative;
+}
+.password-input-wrapper input {
+    padding-right: 45px !important;
+}
+.toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2em;
+    padding: 5px;
+}
+
+/* 滑块验证 */
+.slider-captcha {
+    margin-bottom: 20px;
+}
+.slider-track {
+    position: relative;
+    height: 40px;
+    background: #eee;
+    border-radius: 20px;
+    overflow: hidden;
+    user-select: none;
+}
+.slider-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #a5d6a7, #66bb6a);
+    border-radius: 20px 0 0 20px;
+    transition: width 0.05s;
+}
+.slider-handle {
+    position: absolute;
+    top: 0;
+    width: 44px;
+    height: 40px;
+    background: white;
+    border: 2px solid #ddd;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #999;
+    transition: background 0.3s, border-color 0.3s;
+    z-index: 2;
+}
+.slider-handle:active { cursor: grabbing; }
+.slider-handle.verified {
+    background: #66bb6a;
+    border-color: #66bb6a;
+    color: white;
+    cursor: default;
+}
+.slider-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 0.85em;
+    color: #999;
+    pointer-events: none;
+}
+.verified-text { color: #66bb6a; font-weight: bold; }

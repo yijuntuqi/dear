@@ -15,16 +15,34 @@ async function testConnection() {
 
 // 用户操作
 const userDB = {
-    async createUser(email, passwordHash, username) {
-		const result = await sql`
-			INSERT INTO users (email, password_hash, username)
-			VALUES (${email}, ${passwordHash}, ${username || email.split('@')[0]})
-			RETURNING id, email, username, plan_type, created_at
-		`;
-		return result[0];
-	},
+    async createUser(nickname, phone, email, passwordHash) {
+        const result = await sql`
+            INSERT INTO users (nickname, phone, email, password_hash)
+            VALUES (${nickname}, ${phone}, ${email || null}, ${passwordHash})
+            RETURNING id, nickname, phone, email, plan_type, created_at
+        `;
+        return result[0];
+    },
     
+    // 通过手机号查找用户（登录用）
+    async findByPhone(phone) {
+        const result = await sql`
+            SELECT * FROM users WHERE phone = ${phone}
+        `;
+        return result[0];
+    },
+    
+    // 通过昵称查找（注册时校验唯一性）
+    async findByNickname(nickname) {
+        const result = await sql`
+            SELECT * FROM users WHERE nickname = ${nickname}
+        `;
+        return result[0];
+    },
+    
+    // 通过邮箱查找（注册时校验唯一性）
     async findByEmail(email) {
+        if (!email) return null;
         const result = await sql`
             SELECT * FROM users WHERE email = ${email}
         `;
@@ -33,7 +51,8 @@ const userDB = {
     
     async getUser(userId) {
         const result = await sql`
-            SELECT id, email, plan_type, created_at FROM users WHERE id = ${userId}
+            SELECT id, nickname, phone, email, plan_type, created_at 
+            FROM users WHERE id = ${userId}
         `;
         return result[0];
     },
@@ -42,7 +61,7 @@ const userDB = {
         const result = await sql`
             UPDATE users SET plan_type = ${planType}, updated_at = NOW()
             WHERE id = ${userId}
-            RETURNING id, email, plan_type
+            RETURNING id, nickname, phone, email, plan_type
         `;
         return result[0];
     }
