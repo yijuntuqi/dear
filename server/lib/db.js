@@ -145,7 +145,7 @@ const orderDB = {
     async create(userId, projectId, planType, amount) {
         const result = await sql`
             INSERT INTO orders (user_id, project_id, plan_type, amount, payment_status)
-            VALUES (${userId}, ${projectId}, ${planType}, ${amount}, 'pending')
+            VALUES (${userId}, ${projectId || null}, ${planType}, ${amount}, 'pending')
             RETURNING *
         `;
         return result[0];
@@ -158,6 +158,24 @@ const orderDB = {
             RETURNING *
         `;
         return result[0];
+    },
+    
+    async getUserOrders(userId) {
+        const result = await sql`
+            SELECT * FROM orders WHERE user_id = ${userId}
+            ORDER BY created_at DESC
+        `;
+        return result;
+    },
+    
+    async getPendingOrders() {
+        const result = await sql`
+            SELECT o.*, u.nickname, u.phone 
+            FROM orders o JOIN users u ON o.user_id = u.id
+            WHERE o.payment_status = 'pending'
+            ORDER BY o.created_at DESC
+        `;
+        return result;
     }
 };
 

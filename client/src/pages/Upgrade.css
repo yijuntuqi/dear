@@ -1,0 +1,223 @@
+.upgrade-page {
+    padding: 40px 20px;
+    max-width: 1000px;
+}
+
+.upgrade-header {
+    text-align: center;
+    margin-bottom: 50px;
+    padding-top: 20px;
+}
+
+.upgrade-header h1 {
+    font-size: 2.5em;
+    color: #ff6b8a;
+    margin-bottom: 10px;
+}
+
+.upgrade-header p {
+    color: #999;
+    font-size: 1.1em;
+}
+
+/* 方案卡片 */
+.plans-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+}
+
+.plan-card {
+    text-align: center;
+    padding: 40px 30px;
+    position: relative;
+    transition: transform 0.3s;
+}
+
+.plan-card:hover {
+    transform: translateY(-5px);
+}
+
+.plan-card.featured {
+    border: 2px solid #ff6b8a;
+}
+
+.plan-badge {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #ff6b8a, #ffa3b5);
+    color: white;
+    padding: 5px 20px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    font-weight: bold;
+}
+
+.plan-card h2 {
+    font-size: 1.5em;
+    color: #4a4a4a;
+    margin-bottom: 15px;
+}
+
+.plan-price {
+    font-size: 3em;
+    font-weight: bold;
+    color: #ff6b8a;
+    margin-bottom: 25px;
+}
+
+.plan-price span {
+    font-size: 0.35em;
+    color: #999;
+    font-weight: normal;
+}
+
+.plan-features {
+    list-style: none;
+    text-align: left;
+    margin-bottom: 30px;
+}
+
+.plan-features li {
+    padding: 8px 0;
+    color: #666;
+    font-size: 0.95em;
+}
+
+.btn-block {
+    width: 100%;
+}
+
+/* 支付区域 */
+.payment-section {
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.order-info {
+    font-size: 1.2em;
+    margin: 20px 0;
+    color: #666;
+}
+
+.order-id {
+    color: #ff6b8a;
+    font-size: 1.3em;
+    font-family: monospace;
+    background: #fff5f7;
+    padding: 4px 10px;
+    border-radius: 5px;
+}
+
+.btn-copy {
+    margin-left: 10px;
+    padding: 4px 12px;
+    background: #ff6b8a;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 0.8em;
+}
+
+.order-amount {
+    font-size: 1.1em;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+/* 支付步骤 */
+.payment-steps {
+    text-align: left;
+    margin: 30px 0;
+}
+
+.step-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px 0;
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.step-item.highlight-step {
+    background: #fff5f7;
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px dashed #ff6b8a;
+}
+
+.step-num {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.9em;
+    color: #666;
+    flex-shrink: 0;
+}
+
+.step-item p {
+    color: #666;
+    font-size: 0.95em;
+}
+
+/* 收款码 */
+.qrcode-container {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin: 30px 0;
+    flex-wrap: wrap;
+}
+
+.qrcode-item {
+    text-align: center;
+}
+
+.qrcode-item img {
+    width: 200px;
+    height: 200px;
+    border-radius: 10px;
+    border: 2px solid #eee;
+    object-fit: contain;
+}
+
+.qrcode-item p {
+    margin-top: 10px;
+    color: #999;
+    font-size: 0.9em;
+}
+
+.payment-notice {
+    margin-top: 30px;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 10px;
+}
+
+.payment-notice p {
+    color: #888;
+    font-size: 0.9em;
+    margin: 5px 0;
+}
+
+@media (max-width: 768px) {
+    .plans-grid {
+        grid-template-columns: 1fr;
+    }
+    .qrcode-container {
+        gap: 20px;
+    }
+    .qrcode-item img {
+        width: 150px;
+        height: 150px;
+    }
+}

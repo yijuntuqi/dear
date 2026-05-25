@@ -22,29 +22,32 @@ function StepContent({ formData, updateForm, onBack, onCreate }) {
     };
     
     const handleAIGenerate = async () => {
-        setAiLoading(true);
-        try {
-            const result = await aiAPI.generateContent(
-                formData.ownerName,
-                formData.relationship,
-                formData.theme
-            );
-            
-            if (result.content) {
-                if (result.content.stories) {
-                    updateForm('stories', result.content.stories);
-                }
-                if (result.content.message) {
-                    updateForm('message', result.content.message);
-                }
-                alert('AI内容生成成功！你可以继续修改');
-            }
-        } catch (err) {
-            alert('AI生成失败：' + err.message);
-        } finally {
-            setAiLoading(false);
-        }
-    };
+		const user = JSON.parse(localStorage.getItem('dear_user') || '{}');
+		if (!user || user.plan_type === 'free') {
+			if (window.confirm('AI生成内容是VIP专属功能，是否升级到VIP（¥29.9）？')) {
+				window.location.href = '/upgrade';
+			}
+			return;
+		}
+		
+		setAiLoading(true);
+		try {
+			const result = await aiAPI.generateContent(
+				formData.ownerName,
+				formData.relationship,
+				formData.theme
+			);
+			if (result.content) {
+				if (result.content.stories) updateForm('stories', result.content.stories);
+				if (result.content.message) updateForm('message', result.content.message);
+				alert('AI内容生成成功！你可以继续修改');
+			}
+		} catch (err) {
+			alert('AI生成失败：' + err.message);
+		} finally {
+			setAiLoading(false);
+		}
+	};
     
     const canCreate = formData.stories?.some(s => s.title && s.content) || formData.message;
     

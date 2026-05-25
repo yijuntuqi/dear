@@ -19,8 +19,17 @@ function authMiddleware(req, res, next) {
     }
 }
 
-// AI生成内容
-router.post('/generate-content', authMiddleware, async (req, res) => {
+function vipMiddleware(req, res, next) {
+    userDB.getUser(req.userId).then(user => {
+        if (!user || user.plan_type === 'free') {
+            return res.status(403).json({ error: '此功能需要VIP会员，请先升级' });
+        }
+        next();
+    });
+}
+
+// AI生成内容需要VIP
+router.post('/generate-content', authMiddleware, vipMiddleware, async (req, res) => {
     try {
         const { ownerName, relationship, theme } = req.body;
         const content = await generateContent(ownerName, relationship, theme);
@@ -30,8 +39,8 @@ router.post('/generate-content', authMiddleware, async (req, res) => {
     }
 });
 
-// AI对话定制
-router.post('/chat', authMiddleware, async (req, res) => {
+// AI对话需要VIP
+router.post('/chat', authMiddleware, vipMiddleware, async (req, res) => {
     try {
         const { projectId, message } = req.body;
         

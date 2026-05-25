@@ -8,9 +8,11 @@ const projectRoutes = require('./routes/project');
 const aiRoutes = require('./routes/ai');
 const exportRoutes = require('./routes/export');
 const { testConnection } = require('./lib/db');
+const orderRoutes = require('./routes/order');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+
 
 // 中间件
 app.use(cors());
@@ -23,6 +25,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/export', exportRoutes);
+app.use('/api/orders', orderRoutes);
 
 // 健康检查
 app.get('/api/health', (req, res) => {
