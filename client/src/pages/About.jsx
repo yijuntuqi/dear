@@ -1,8 +1,10 @@
 import './About.css';
+import BackButton from '../components/BackButton';
 
 function About() {
     return (
         <div className="about-page container">
+			<BackButton to="/" label="返回首页" />
             <section className="about-hero">
                 <h1>关于 Dear</h1>
                 <p className="about-subtitle">为你所爱的人，写一页 Dear</p>

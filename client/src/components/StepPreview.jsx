@@ -85,12 +85,14 @@ function generatePreviewHTML(project) {
                 }
                 .story h3 { color: #ff6b8a; }
                 .message {
-                    background: linear-gradient(135deg, #ff6b8a, #ffa3b5);
-                    color: white;
-                    padding: 30px;
-                    border-radius: 15px;
-                    margin: 20px 0;
-                }
+					background: linear-gradient(135deg, #ff6b8a, #ffa3b5);
+					color: white;
+					padding: 30px;
+					border-radius: 15px;
+					margin: 20px 0;
+					text-align: left;
+					white-space: pre-wrap;
+				}
                 .footer { color: #999; margin-top: 30px; }
             </style>
         </head>

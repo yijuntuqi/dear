@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { projectAPI } from '../utils/api';
 import './Preview.css';
+import BackButton from '../components/BackButton';
 
 function Preview() {
     const { id } = useParams();
@@ -31,6 +32,7 @@ function Preview() {
     
     return (
         <div className="preview-page">
+			<BackButton label="返回" />
             <iframe
                 srcDoc={html}
                 title="预览"

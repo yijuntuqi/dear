@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dear <%= data.owner_name %> - 专属纪念页</title>
+    <title>Dear x - 专属纪念页</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -106,39 +106,37 @@
 <body>
     <div class="page">
         <section class="hero">
-            <h1><%= data.owner_name %></h1>
-            <p class="relation"><%= data.dedication || '重要的人' %></p>
-            <% if (data.basic_info && data.basic_info.intro) { %>
-                <p class="intro"><%= data.basic_info.intro %></p>
-            <% } %>
+            <h1>x</h1>
+            <p class="relation">致最敬爱的爷爷奶奶</p>
+            
+                <p class="intro">x</p>
+            
         </section>
         
-        <% if (data.stories && data.stories.length > 0) { %>
+        
         <section class="stories">
-            <% data.stories.forEach(function(story) { %>
+            
                 <div class="story">
-                    <h3><%= story.title %></h3>
-                    <p><%= story.content %></p>
+                    <h3>x</h3>
+                    <p>x</p>
                 </div>
-            <% }); %>
+            
         </section>
-        <% } %>
         
-        <% if (data.message) { %>
+        
+        
         <section class="message-section">
             <h2>💌 想对你说</h2>
-            <p><%= data.message %></p>
+            <p>x</p>
         </section>
-        <% } %>
+        
         
         <!-- 签名区 -->
         <section class="signature-area">
-            <% if (data.basic_info && data.basic_info.authorName) { %>
-                <p class="signature-name"><%= data.basic_info.authorName %></p>
-            <% } else { %>
-                <p class="signature-name">爱你的人</p>
-            <% } %>
-            <p class="signature-date"><%= new Date().toLocaleDateString('zh-CN', {year:'numeric', month:'long', day:'numeric'}) %></p>
+            
+                <p class="signature-name">x</p>
+            
+            <p class="signature-date">2026年5月25日</p>
         </section>
         
         <p class="footer-line">Made with <span class="heart">❤️</span> by Dear</p>

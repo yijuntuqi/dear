@@ -13,7 +13,7 @@ router.get('/source/:projectId', async (req, res) => {
         const project = await projectDB.getById(req.params.projectId);
         if (!project) return res.status(404).json({ error: '项目不存在' });
         
-        // 如果没有生成过HTML，现在生成
+        // 生成 HTML
         let html = project.generated_html;
         if (!html) {
             html = await renderPage(project);
@@ -24,36 +24,20 @@ router.get('/source/:projectId', async (req, res) => {
         }
         
         // 创建临时文件夹
-        const tmpDir = path.join(__dirname, '..', 'uploads', `export_${project.id}_${Date.now()}`);
+        const tmpDir = path.join(__dirname, '..', 'uploads', 'export_' + project.id + '_' + Date.now());
         fs.mkdirSync(tmpDir, { recursive: true });
         
         // 写入HTML文件
-        const safeName = project.owner_name.replace(/[<>:"/\\|?*]/g, '_');
-        fs.writeFileSync(path.join(tmpDir, `${safeName}.html`), html);
-        
-        // 如果有照片，也复制过去
-        if (project.uploaded_photos && project.uploaded_photos.length > 0) {
-            const photosDir = path.join(tmpDir, 'photos');
-            fs.mkdirSync(photosDir, { recursive: true });
-            project.uploaded_photos.forEach(photo => {
-                const photoPath = path.join(__dirname, '..', photo.url || '');
-                if (fs.existsSync(photoPath)) {
-                    fs.copyFileSync(photoPath, path.join(photosDir, path.basename(photoPath)));
-                }
-            });
-        }
+        const safeName = (project.owner_name || 'dear').replace(/[<>:"/\\|?*]/g, '_');
+        fs.writeFileSync(path.join(tmpDir, safeName + '.html'), html);
         
         // 创建zip包
         const zipPath = tmpDir + '.zip';
         const output = fs.createWriteStream(zipPath);
         const archive = archiver('zip', { zlib: { level: 9 } });
         
-        archive.pipe(output);
-        archive.directory(tmpDir, false);
-        
         output.on('close', () => {
-            res.download(zipPath, `Dear_${safeName}_源码包.zip`, (err) => {
-                // 清理临时文件
+            res.download(zipPath, 'Dear_' + safeName + '_源码包.zip', (err) => {
                 try {
                     fs.rmSync(tmpDir, { recursive: true, force: true });
                     fs.unlinkSync(zipPath);
@@ -62,9 +46,12 @@ router.get('/source/:projectId', async (req, res) => {
         });
         
         archive.on('error', (err) => {
-            res.status(500).json({ error: '压缩失败' });
+            console.error('压缩失败:', err);
+            res.status(500).json({ error: '压缩失败: ' + err.message });
         });
         
+        archive.pipe(output);
+        archive.directory(tmpDir, false);
         await archive.finalize();
         
     } catch (error) {
@@ -79,7 +66,6 @@ router.get('/html/:projectId', async (req, res) => {
         const project = await projectDB.getById(req.params.projectId);
         if (!project) return res.status(404).json({ error: '项目不存在' });
         
-        // 如果没有生成过HTML，现在生成
         let html = project.generated_html;
         if (!html) {
             html = await renderPage(project);
@@ -89,18 +75,20 @@ router.get('/html/:projectId', async (req, res) => {
             });
         }
         
-        const safeName = project.owner_name.replace(/[<>:"/\\|?*]/g, '_');
+        const safeName = (project.owner_name || 'dear').replace(/[<>:"/\\|?*]/g, '_');
+        const filename = encodeURIComponent('Dear_' + safeName + '.html');
+        
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
-        res.setHeader('Content-Disposition', `attachment; filename="Dear_${safeName}.html"`);
+        res.setHeader('Content-Disposition', 'attachment; filename*=UTF-8\'\'' + filename);
         res.send(html);
         
     } catch (error) {
-        console.error('下载失败:', error);
-        res.status(500).json({ error: '下载失败' });
+        console.error('下载HTML失败:', error);
+        res.status(500).json({ error: '下载失败: ' + error.message });
     }
 });
 
-// 直接预览HTML
+// 预览HTML
 router.get('/preview/:projectId', async (req, res) => {
     try {
         const project = await projectDB.getById(req.params.projectId);

@@ -4,6 +4,7 @@ import StepBasicInfo from '../components/StepBasicInfo';
 import StepContent from '../components/StepContent';
 import StepPreview from '../components/StepPreview';
 import StepDownload from '../components/StepDownload';
+import BackButton from '../components/BackButton';
 import { projectAPI } from '../utils/api';
 import './Create.css';
 
@@ -15,7 +16,7 @@ function Create() {
         ownerName: '',
         relationship: 'parent',
         theme: 'parent',
-        basicInfo: { intro: '' },
+        basicInfo: { intro: '', authorName: '' },
         stories: [{ title: '', content: '' }],
         message: ''
     });
@@ -36,19 +37,34 @@ function Create() {
     };
     
     const handleRender = async () => {
+        if (!project || !project.id) {
+            alert('项目信息异常，请返回重新创建');
+            return;
+        }
         try {
             const result = await projectAPI.render(project.id);
             setGeneratedHtml(result.html);
+            setProject(prev => ({ ...prev, generated_html: result.html, status: 'completed' }));
             setStep(4);
         } catch (err) {
             alert('生成失败：' + err.message);
         }
     };
     
+    const goBack = () => {
+        if (step > 1) setStep(step - 1);
+        else navigate('/');
+    };
+    
+    const stepLabels = ['基本信息', '填写内容', '预览确认', '下载网页'];
+    
     return (
         <div className="create-page container">
+            {/* 全局返回按钮 */}
+            <BackButton onCustomClick={goBack} label={step > 1 ? `返回：${stepLabels[step - 2]}` : '返回首页'} />
+            
             <div className="step-indicator">
-                {['基本信息', '填写内容', '预览确认', '下载网页'].map((label, i) => (
+                {stepLabels.map((label, i) => (
                     <div key={i} className={`step ${step >= i + 1 ? 'active' : ''}`}>
                         <div className="step-circle">{i + 1}</div>
                         <span>{label}</span>
@@ -58,35 +74,16 @@ function Create() {
             
             <div className="step-content">
                 {step === 1 && (
-                    <StepBasicInfo
-                        formData={formData}
-                        updateForm={updateForm}
-                        onNext={() => setStep(2)}
-                    />
+                    <StepBasicInfo formData={formData} updateForm={updateForm} onNext={() => setStep(2)} />
                 )}
-                
                 {step === 2 && (
-                    <StepContent
-                        formData={formData}
-                        updateForm={updateForm}
-                        onBack={() => setStep(1)}
-                        onCreate={handleCreate}
-                    />
+                    <StepContent formData={formData} updateForm={updateForm} onBack={() => setStep(1)} onCreate={handleCreate} />
                 )}
-                
                 {step === 3 && project && (
-                    <StepPreview
-                        project={project}
-                        onBack={() => setStep(2)}
-                        onRender={handleRender}
-                    />
+                    <StepPreview project={project} onBack={() => setStep(2)} onRender={handleRender} />
                 )}
-                
-                {step === 4 && (
-                    <StepDownload
-                        project={project}
-                        generatedHtml={generatedHtml}
-                    />
+                {step === 4 && project && (
+                    <StepDownload project={project} generatedHtml={generatedHtml} onBack={() => setStep(3)} />
                 )}
             </div>
         </div>

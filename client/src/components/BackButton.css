@@ -1,0 +1,54 @@
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: white;
+    border: 1.5px solid #eee;
+    border-radius: 25px;
+    color: #666;
+    cursor: pointer;
+    font-size: 0.95em;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    position: fixed;
+    top: 80px;
+    left: 25px;
+    z-index: 50;
+}
+
+.back-button:hover {
+    border-color: #ff6b8a;
+    color: #ff6b8a;
+    background: #fff5f7;
+    box-shadow: 0 2px 8px rgba(255,107,138,0.15);
+    transform: translateX(-3px);
+}
+
+.back-arrow {
+    font-size: 1.2em;
+    transition: transform 0.3s;
+}
+
+.back-button:hover .back-arrow {
+    transform: translateX(-3px);
+}
+
+.back-label {
+    white-space: nowrap;
+}
+
+/* 响应式：小屏幕时按钮缩小 */
+@media (max-width: 600px) {
+    .back-button {
+        top: 70px;
+        left: 10px;
+        padding: 8px 15px;
+        font-size: 0.85em;
+        gap: 5px;
+    }
+    .back-label {
+        display: none; /* 小屏只显示箭头 */
+    }
+}

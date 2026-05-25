@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { projectAPI } from '../utils/api';
 import './Dashboard.css';
+import BackButton from '../components/BackButton';
 
 function Dashboard() {
     const [projects, setProjects] = useState([]);
@@ -67,6 +68,7 @@ function Dashboard() {
 
     return (
         <div className="dashboard-page container">
+			<BackButton to="/" label="返回首页" />
             <div className="dashboard-header">
                 <h1>📋 我的项目</h1>
                 <button className="btn btn-primary" onClick={() => navigate('/create')}>

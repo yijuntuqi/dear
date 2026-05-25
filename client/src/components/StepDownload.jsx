@@ -1,30 +1,43 @@
-import { useState } from 'react';
 import { exportAPI } from '../utils/api';
 import './StepDownload.css';
 
-function StepDownload({ project, generatedHtml }) {
-    const [downloading, setDownloading] = useState(false);
+function StepDownload({ project, generatedHtml, onBack }) {
     
     const handleDownloadZip = () => {
-		const link = document.createElement('a');
-		link.href = exportAPI.downloadSource(project.id);
-		link.download = `Dear_${project.owner_name}_源码包.zip`;
-		document.body.appendChild(link);
-		link.click();
-		document.body.removeChild(link);
-	};
-
-	const handleDownloadHTML = () => {
-		const link = document.createElement('a');
-		link.href = exportAPI.downloadHTML(project.id);
-		link.download = `Dear_${project.owner_name}.html`;
-		document.body.appendChild(link);
-		link.click();
-		document.body.removeChild(link);
-	};
+        const link = document.createElement('a');
+        link.href = exportAPI.downloadSource(project.id);
+        link.download = `Dear_${project.owner_name}_源码包.zip`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+    
+    const handleDownloadHTML = () => {
+        const link = document.createElement('a');
+        link.href = exportAPI.downloadHTML(project.id);
+        link.download = `Dear_${project.owner_name}.html`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+    
+    const handleCopyHTML = () => {
+        const htmlToCopy = generatedHtml || '';
+        if (!htmlToCopy) {
+            alert('没有可复制的内容，请先下载HTML文件');
+            return;
+        }
+        navigator.clipboard.writeText(htmlToCopy).then(() => {
+            alert('HTML代码已复制到剪贴板！');
+        }).catch(() => {
+            alert('复制失败，请尝试下载HTML文件');
+        });
+    };
     
     return (
         <div className="step-download">
+            {/* 顶部已有返回按钮，这里可以去掉 */}
+            
             <h2>🎉 恭喜！网页已生成</h2>
             <p className="step-desc">你的专属纪念网页已经准备好了</p>
             
