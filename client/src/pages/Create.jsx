@@ -7,6 +7,7 @@ import StepDownload from '../components/StepDownload';
 import BackButton from '../components/BackButton';
 import { projectAPI } from '../utils/api';
 import './Create.css';
+import { useNavigate } from 'react-router-dom';
 
 function Create() {
     const navigate = useNavigate();
@@ -27,14 +28,28 @@ function Create() {
     };
     
     const handleCreate = async () => {
-        try {
-            const result = await projectAPI.create(formData);
-            setProject(result.project);
-            setStep(3);
-        } catch (err) {
-            alert('创建失败：' + err.message);
-        }
-    };
+		try {
+			const result = await projectAPI.create(formData);
+			setProject(result.project);
+			
+			// 检查用户是否是VIP
+			const user = JSON.parse(localStorage.getItem('dear_user') || '{}');
+			if (user.plan_type !== 'free') {
+				// VIP用户自动跳转到AI对话页面
+				navigate('/ai-chat', { 
+					state: { 
+						projectId: result.project.id, 
+						ownerName: result.project.owner_name 
+					} 
+				});
+				return;
+			}
+			
+			setStep(3);
+		} catch (err) {
+			alert('创建失败：' + err.message);
+		}
+	};
     
     const handleRender = async () => {
         if (!project || !project.id) {

@@ -51,10 +51,15 @@ export const aiAPI = {
         method: 'POST',
         body: JSON.stringify({ projectId, message })
     }),
+    applySuggestions: (projectId) => request('/ai/apply-suggestions', {
+        method: 'POST',
+        body: JSON.stringify({ projectId })
+    }),
     generateColors: (description, mood) => request('/ai/generate-colors', {
         method: 'POST',
         body: JSON.stringify({ description, mood })
-    })
+    }),
+    getConversation: (projectId) => request(`/ai/conversation/${projectId}`)
 };
 
 export const exportAPI = {

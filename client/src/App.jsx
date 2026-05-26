@@ -8,6 +8,7 @@ import Dashboard from './pages/Dashboard';
 import About from './pages/About';
 import './styles/global.css';
 import Upgrade from './pages/Upgrade';
+import AIChat from './pages/AIChat';
 
 function App() {
     return (
@@ -22,6 +23,7 @@ function App() {
                         <Route path="/dashboard" element={<Dashboard />} />
                         <Route path="/about" element={<About />} />
 						<Route path="/upgrade" element={<Upgrade />} />
+						<Route path="/ai-chat" element={<AIChat />} />
                     </Routes>
                 </main>
                 <Footer />
