@@ -40,6 +40,15 @@ function Dashboard() {
             alert('删除失败：' + err.message);
         }
     };
+	
+	const handleDownload = (project) => {
+		const link = document.createElement('a');
+		link.href = `http://localhost:3001/api/export/source/${project.id}`;
+		link.download = `Dear_${project.owner_name}_源码包.zip`;
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+	};
 
     const relationshipMap = {
         parent: '👨‍👩‍👧 父母',
@@ -119,6 +128,11 @@ function Dashboard() {
                                 >
                                     预览
                                 </button>
+								{project.status === 'completed' && project.generated_html && (
+									<button className="btn btn-primary btn-small" onClick={() => handleDownload(project)}>
+										📥 下载
+									</button>
+								)}
                                 <button
                                     className="btn btn-danger btn-small"
                                     onClick={() => handleDelete(project.id)}

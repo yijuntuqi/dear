@@ -89,13 +89,27 @@ function PreviewConfirm() {
 		document.body.removeChild(link);
 	};
     
-    const handleCopyHTML = () => {
-        navigator.clipboard.writeText(generatedHtml).then(() => {
-            alert('HTML代码已复制！');
-        }).catch(() => {
-            alert('复制失败，请下载HTML文件');
-        });
-    };
+    const handleCopyHTML = async () => {
+		// VIP项目且未使用 → 先确认
+		if (project.project_type !== 'free' && !project.vip_used) {
+			if (!window.confirm('确认创建成功？这将消耗1次VIP权益。')) {
+				return;
+			}
+			try {
+				await projectAPI.confirmDownload(project.id);
+				setProject(prev => ({ ...prev, vip_used: true, status: 'completed' }));
+			} catch (err) {
+				alert('确认失败，请重试');
+				return;
+			}
+		}
+		
+		navigator.clipboard.writeText(generatedHtml).then(() => {
+			alert('HTML代码已复制！');
+		}).catch(() => {
+			alert('复制失败，请下载HTML文件');
+		});
+	};
     
     if (loading) return <div className="container">加载中...</div>;
     if (!project) return <div className="container">项目不存在</div>;

@@ -107,6 +107,68 @@
     font-size: 0.9em;
 }
 
+.plan-choice {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.plan-choice h2 {
+    font-size: 2em;
+    color: #4a4a4a;
+    margin-bottom: 10px;
+}
+
+.plan-choice-desc {
+    color: #999;
+    margin-bottom: 40px;
+}
+
+.choice-cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.choice-card {
+    text-align: center;
+    padding: 40px 25px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.choice-card:hover {
+    transform: translateY(-5px);
+}
+
+.choice-card.featured {
+    border: 2px solid #ff6b8a;
+}
+
+.choice-icon {
+    font-size: 3em;
+    display: block;
+    margin-bottom: 15px;
+}
+
+.choice-card h3 {
+    color: #4a4a4a;
+    margin-bottom: 10px;
+}
+
+.choice-card p {
+    color: #999;
+    font-size: 0.9em;
+    line-height: 1.5;
+}
+
+@media (max-width: 600px) {
+    .choice-cards {
+        grid-template-columns: 1fr;
+    }
+}
+
 @media (max-width: 768px) {
     .step-indicator {
         gap: 15px;
