@@ -1,13 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { projectAPI } from '../utils/api';
+import { projectAPI, exportAPI } from '../utils/api';
 import './Dashboard.css';
-import BackButton from '../components/BackButton';
 
 function Dashboard() {
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [user, setUser] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -16,7 +14,6 @@ function Dashboard() {
             navigate('/create');
             return;
         }
-        setUser(JSON.parse(savedUser));
         loadProjects();
     }, []);
 
@@ -26,6 +23,7 @@ function Dashboard() {
             setProjects(result.projects || []);
         } catch (err) {
             console.error('加载项目失败:', err);
+            setProjects([]);
         } finally {
             setLoading(false);
         }
@@ -40,15 +38,27 @@ function Dashboard() {
             alert('删除失败：' + err.message);
         }
     };
-	
-	const handleDownload = (project) => {
-		const link = document.createElement('a');
-		link.href = `http://localhost:3001/api/export/source/${project.id}`;
-		link.download = `Dear_${project.owner_name}_源码包.zip`;
-		document.body.appendChild(link);
-		link.click();
-		document.body.removeChild(link);
-	};
+
+    // 跳转到下载页面
+    const handleGoDownload = (project) => {
+        navigate(`/preview-confirm/${project.id}`);
+    };
+
+    // 继续编辑草稿
+    const handleContinueEdit = (project) => {
+        if (project.project_type === 'vip' && !project.vip_used) {
+            // VIP草稿 → 跳转到AI对话页面继续
+            navigate('/ai-chat', {
+                state: {
+                    projectId: project.id,
+                    ownerName: project.owner_name
+                }
+            });
+        } else {
+            // 免费项目 → 跳转到预览页面
+            navigate(`/preview-confirm/${project.id}`);
+        }
+    };
 
     const relationshipMap = {
         parent: '👨‍👩‍👧 父母',
@@ -70,12 +80,18 @@ function Dashboard() {
         teacher: '📚 庄重师恩',
         family: '🧡 温暖亲人'
     };
-	
-	const typeLabels = {
-		free: { label: '免费', color: '#999' },
-		vip: { label: 'VIP', color: '#ff6b8a' },
-		mvp: { label: 'MVP', color: '#f57c00' }
-	};
+
+    const typeLabels = {
+        free: { label: '免费', className: 'type-free' },
+        vip: { label: 'VIP', className: 'type-vip' },
+        mvp: { label: 'MVP', className: 'type-mvp' }
+    };
+
+    const statusLabels = {
+        draft: { label: '草稿', className: 'status-draft' },
+        completed: { label: '已完成', className: 'status-completed' },
+        delivered: { label: '已交付', className: 'status-delivered' }
+    };
 
     if (loading) {
         return <div className="dashboard-loading">加载中...</div>;
@@ -83,7 +99,6 @@ function Dashboard() {
 
     return (
         <div className="dashboard-page container">
-			<BackButton to="/" label="返回首页" />
             <div className="dashboard-header">
                 <h1>📋 我的项目</h1>
                 <button className="btn btn-primary" onClick={() => navigate('/create')}>
@@ -106,13 +121,14 @@ function Dashboard() {
                         <div key={project.id} className="project-card card">
                             <div className="project-header">
                                 <h3>💝 {project.owner_name}</h3>
-								<span className="type-badge" style={{ background: typeLabels[project.project_type]?.color }}>
-									{typeLabels[project.project_type]?.label}
-								</span>
-                                <span className={`status-badge ${project.status}`}>
-                                    {project.status === 'draft' ? '草稿' : 
-                                     project.status === 'completed' ? '已完成' : '已交付'}
-                                </span>
+                                <div className="project-badges">
+                                    <span className={`type-badge ${typeLabels[project.project_type]?.className}`}>
+                                        {typeLabels[project.project_type]?.label}
+                                    </span>
+                                    <span className={`status-badge ${statusLabels[project.status]?.className}`}>
+                                        {statusLabels[project.status]?.label}
+                                    </span>
+                                </div>
                             </div>
                             <div className="project-meta">
                                 <p>{relationshipMap[project.relationship] || '重要的人'}</p>
@@ -122,22 +138,40 @@ function Dashboard() {
                                 </p>
                             </div>
                             <div className="project-actions">
-                                <button
-                                    className="btn btn-secondary btn-small"
-                                    onClick={() => navigate(`/preview/${project.id}`)}
-                                >
-                                    预览
-                                </button>
-								{project.status === 'completed' && project.generated_html && (
-									<button className="btn btn-primary btn-small" onClick={() => handleDownload(project)}>
-										📥 下载
-									</button>
-								)}
+                                {/* 草稿 → 继续编辑 */}
+                                {project.status === 'draft' && (
+                                    <button
+                                        className="btn btn-primary btn-small"
+                                        onClick={() => handleContinueEdit(project)}
+                                    >
+                                        ✏️ 继续编辑
+                                    </button>
+                                )}
+                                
+                                {/* 已完成 → 预览 + 下载 + 删除 */}
+                                {project.status === 'completed' && (
+                                    <>
+                                        <button
+                                            className="btn btn-secondary btn-small"
+                                            onClick={() => navigate(`/preview/${project.id}`)}
+                                        >
+                                            👁️ 预览
+                                        </button>
+                                        <button
+                                            className="btn btn-primary btn-small"
+                                            onClick={() => handleGoDownload(project)}
+                                        >
+                                            📥 下载
+                                        </button>
+                                    </>
+                                )}
+                                
+                                {/* 所有项目都可以删除 */}
                                 <button
                                     className="btn btn-danger btn-small"
                                     onClick={() => handleDelete(project.id)}
                                 >
-                                    删除
+                                    🗑️ 删除
                                 </button>
                             </div>
                         </div>

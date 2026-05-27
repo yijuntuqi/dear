@@ -11,7 +11,9 @@ async function request(url, options = {}) {
     const res = await fetch(`${API_BASE}${url}`, { ...options, headers });
     const data = await res.json();
     
-    if (!res.ok) throw new Error(data.error || '请求失败');
+    if (!res.ok) {
+        throw new Error(data.error || '请求失败');
+    }
     return data;
 }
 

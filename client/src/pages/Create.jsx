@@ -56,12 +56,14 @@ function Create() {
 			
 			setStep(3);
 		} catch (err) {
+			// 检查是否是VIP权益用完
 			if (err.message?.includes('VIP权益已使用完毕')) {
 				alert('您的VIP权益已使用完毕，请重新购买VIP');
 				navigate('/upgrade');
-			} else {
-				alert('创建失败：' + err.message);
+				return;
 			}
+			// 其他错误
+			alert(err.message || '创建失败，请重试');
 		}
 	};
     

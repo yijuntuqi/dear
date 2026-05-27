@@ -130,3 +130,76 @@
     background: #e74c3c;
     color: white;
 }
+
+.project-badges {
+    display: flex;
+    gap: 6px;
+}
+
+.type-badge {
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.7em;
+    font-weight: 600;
+}
+
+.type-free {
+    background: #e8e8e8;
+    color: #888;
+}
+
+.type-vip {
+    background: linear-gradient(135deg, #ffe0e6, #ffb3c1);
+    color: #ff6b8a;
+}
+
+.type-mvp {
+    background: linear-gradient(135deg, #ffe0b2, #ffcc80);
+    color: #f57c00;
+}
+
+.status-badge {
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.7em;
+    font-weight: 500;
+}
+
+.status-draft {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-completed {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-delivered {
+    background: #cce5ff;
+    color: #004085;
+}
+
+.project-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+
+.project-actions .btn-small {
+    padding: 7px 15px;
+    font-size: 0.8em;
+    border-radius: 15px;
+}
+
+.btn-danger {
+    background: white;
+    color: #e74c3c;
+    border: 1px solid #e74c3c;
+}
+
+.btn-danger:hover {
+    background: #e74c3c;
+    color: white;
+}
