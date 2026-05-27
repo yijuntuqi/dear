@@ -67,9 +67,9 @@ function Home() {
                             <li>✅ 照片/音频上传</li>
                             <li>✅ 无限次修改</li>
                         </ul>
-                        <button className="btn btn-primary" onClick={() => navigate('/create')}>
-                            升级VIP
-                        </button>
+                        <button className="btn btn-primary" onClick={() => navigate('/upgrade')}>
+							升级VIP
+						</button>
                     </div>
                     <div className="pricing-card card">
                         <h3>MVP版</h3>
@@ -80,9 +80,9 @@ function Home() {
                             <li>✅ 自定义应用图标</li>
                             <li>✅ 1对1专属服务</li>
                         </ul>
-                        <button className="btn btn-secondary" onClick={() => navigate('/create')}>
-                            升级MVP
-                        </button>
+                        <button className="btn btn-secondary" onClick={() => navigate('/upgrade')}>
+							升级MVP
+						</button>
                     </div>
                 </div>
             </section>

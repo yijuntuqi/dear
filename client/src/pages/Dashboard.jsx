@@ -61,6 +61,12 @@ function Dashboard() {
         teacher: '📚 庄重师恩',
         family: '🧡 温暖亲人'
     };
+	
+	const typeLabels = {
+		free: { label: '免费', color: '#999' },
+		vip: { label: 'VIP', color: '#ff6b8a' },
+		mvp: { label: 'MVP', color: '#f57c00' }
+	};
 
     if (loading) {
         return <div className="dashboard-loading">加载中...</div>;
@@ -91,6 +97,9 @@ function Dashboard() {
                         <div key={project.id} className="project-card card">
                             <div className="project-header">
                                 <h3>💝 {project.owner_name}</h3>
+								<span className="type-badge" style={{ background: typeLabels[project.project_type]?.color }}>
+									{typeLabels[project.project_type]?.label}
+								</span>
                                 <span className={`status-badge ${project.status}`}>
                                     {project.status === 'draft' ? '草稿' : 
                                      project.status === 'completed' ? '已完成' : '已交付'}

@@ -78,25 +78,26 @@ function AIChat() {
     };
     
     const handleApplySuggestions = async () => {
-        setApplying(true);
-        try {
-            const result = await aiAPI.applySuggestions(projectId);
-            if (result.content) {
-                setMessages(prev => [...prev, {
-                    role: 'assistant',
-                    content: '✅ 已根据我们的对话生成了最终内容！\n\n现在可以预览网页效果了。'
-                }]);
-                
-                setTimeout(() => {
-                    navigate(`/preview/${projectId}`);
-                }, 1500);
-            }
-        } catch (err) {
-            alert('应用失败：' + err.message);
-        } finally {
-            setApplying(false);
-        }
-    };
+		setApplying(true);
+		try {
+			const result = await aiAPI.applySuggestions(projectId);
+			if (result.content) {
+				setMessages(prev => [...prev, {
+					role: 'assistant',
+					content: '✅ 已根据我们的对话生成了最终内容！\n\n正在跳转到预览页面...'
+				}]);
+				
+				// 跳转到预览确认页（Step3），而不是直接预览
+				setTimeout(() => {
+					navigate(`/preview-confirm/${projectId}`);
+				}, 1500);
+			}
+		} catch (err) {
+			alert('应用失败：' + err.message);
+		} finally {
+			setApplying(false);
+		}
+	};
     
     const handleKeyDown = (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {

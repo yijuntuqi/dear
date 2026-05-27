@@ -42,22 +42,30 @@ function getDedication(relationship) {
  * @returns {Promise<string>} 渲染后的 HTML
  */
 async function renderPage(projectData) {
-    // 1. 根据主题选择模板
     const templateName = THEME_TEMPLATES[projectData.theme] || 'parent.ejs';
     const templatePath = path.join(__dirname, '..', 'templates', templateName);
     
-    // 2. 生成献词（如果前端没有传入 dedication）
     const dedication = projectData.dedication || getDedication(projectData.relationship);
     
-    // 3. 准备渲染数据（不修改原对象，创建新对象）
+    // 合并AI生成的内容（如果有的话）
+    const stories = projectData.stories || [];
+    const message = projectData.message || '';
+    
+    // 准备渲染数据
     const renderData = {
         data: {
-            ...projectData,      // 保留原有所有字段
-            dedication           // 添加/覆盖 dedication 字段
+            ...projectData,
+            dedication,
+            stories: stories,
+            message: message,
+            basic_info: {
+                ...projectData.basic_info,
+                meetDate: projectData.basic_info?.meetDate || null,
+                timelineLabel: projectData.basic_info?.timelineLabel || '和你相识后的每一秒我都感到幸福'
+            }
         }
     };
     
-    // 4. 渲染模板
     return new Promise((resolve, reject) => {
         ejs.renderFile(templatePath, renderData, (err, html) => {
             if (err) reject(err);

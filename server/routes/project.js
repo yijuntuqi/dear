@@ -7,7 +7,7 @@ const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'dear-secret';
 
 // 中间件：验证用户
-function authMiddleware(req, res, next) {
+function 	(req, res, next) {
     const token = req.headers.authorization?.split(' ')[1];
     if (!token) return res.status(401).json({ error: '请先登录' });
     
@@ -23,10 +23,21 @@ function authMiddleware(req, res, next) {
 // 创建项目
 router.post('/', authMiddleware, async (req, res) => {
     try {
-        const project = await projectDB.create(req.userId, req.body);
+        const { projectType } = req.body;  // 'free' | 'vip' | 'mvp'
+        const project = await projectDB.create(req.userId, req.body, projectType || 'free');
         res.json({ success: true, project });
     } catch (error) {
         res.status(500).json({ error: '创建失败' });
+    }
+});
+
+// 确认下载（标记VIP已使用 + 状态改为completed）
+router.post('/:id/confirm-download', authMiddleware, async (req, res) => {
+    try {
+        const project = await projectDB.markVipUsed(req.params.id);
+        res.json({ success: true, project });
+    } catch (error) {
+        res.status(500).json({ error: '确认失败' });
     }
 });
 

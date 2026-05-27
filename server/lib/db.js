@@ -13,6 +13,33 @@ async function testConnection() {
     }
 }
 
+// 数据库操作重试包装
+async function withRetry(fn, maxRetries = 2) {
+    for (let i = 0; i <= maxRetries; i++) {
+        try {
+            return await fn();
+        } catch (error) {
+            if (i === maxRetries) throw error;
+            console.log(`数据库操作失败，重试 ${i + 1}/${maxRetries}...`);
+            await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
+        }
+    }
+}
+
+// 修改关键操作示例
+const userDB = {
+    async getUser(userId) {
+        return withRetry(async () => {
+            const result = await sql`
+                SELECT id, nickname, phone, email, plan_type, created_at 
+                FROM users WHERE id = ${userId}
+            `;
+            return result[0];
+        });
+    },
+    // ... 其他方法同样包装
+};
+
 // 用户操作
 const userDB = {
     async createUser(nickname, phone, email, passwordHash) {
@@ -50,11 +77,13 @@ const userDB = {
     },
     
     async getUser(userId) {
-        const result = await sql`
-            SELECT id, nickname, phone, email, plan_type, created_at 
-            FROM users WHERE id = ${userId}
-        `;
-        return result[0];
+        return withRetry(async () => {
+            const result = await sql`
+                SELECT id, nickname, phone, email, plan_type, created_at 
+                FROM users WHERE id = ${userId}
+            `;
+            return result[0];
+        });
     },
     
     async upgradePlan(userId, planType) {
@@ -69,54 +98,44 @@ const userDB = {
 
 // 项目操作
 const projectDB = {
-    async create(userId, data) {
+    // 创建项目时记录类型
+    async create(userId, data, projectType = 'free') {
         const result = await sql`
-            INSERT INTO projects (user_id, owner_name, relationship, theme, basic_info, stories, message)
+            INSERT INTO projects (user_id, owner_name, relationship, theme, basic_info, stories, message, project_type)
             VALUES (${userId}, ${data.ownerName}, ${data.relationship}, ${data.theme},
-                    ${JSON.stringify(data.basicInfo)}, ${JSON.stringify(data.stories)}, ${data.message})
+                    ${JSON.stringify(data.basicInfo)}, ${JSON.stringify(data.stories)}, ${data.message}, ${projectType})
             RETURNING *
         `;
         return result[0];
     },
     
-    async update(projectId, data) {
+    // 标记VIP权益已使用
+    async markVipUsed(projectId) {
         const result = await sql`
-            UPDATE projects SET
-                owner_name = COALESCE(${data.ownerName}, owner_name),
-                relationship = COALESCE(${data.relationship}, relationship),
-                theme = COALESCE(${data.theme}, theme),
-                basic_info = COALESCE(${JSON.stringify(data.basicInfo)}::jsonb, basic_info),
-                stories = COALESCE(${JSON.stringify(data.stories)}::jsonb, stories),
-                message = COALESCE(${data.message}, message),
-                color_scheme = COALESCE(${JSON.stringify(data.colorScheme)}::jsonb, color_scheme),
-                uploaded_photos = COALESCE(${JSON.stringify(data.uploadedPhotos)}::jsonb, uploaded_photos),
-                uploaded_audio = COALESCE(${JSON.stringify(data.uploadedAudio)}::jsonb, uploaded_audio),
-                ai_conversation = COALESCE(${JSON.stringify(data.aiConversation)}::jsonb, ai_conversation),
-                generated_html = COALESCE(${data.generatedHtml}, generated_html),
-                status = COALESCE(${data.status}, status),
-                updated_at = NOW()
+            UPDATE projects SET vip_used = TRUE, status = 'completed', updated_at = NOW()
             WHERE id = ${projectId}
             RETURNING *
         `;
         return result[0];
     },
     
-    async getById(projectId) {
-        const result = await sql`SELECT * FROM projects WHERE id = ${projectId}`;
-        return result[0];
+    // 获取用户VIP使用次数
+    async getVipUsedCount(userId) {
+        const result = await sql`
+            SELECT COUNT(*) as count FROM projects 
+            WHERE user_id = ${userId} AND project_type = 'vip' AND vip_used = TRUE
+        `;
+        return parseInt(result[0].count);
     },
     
+    // 获取用户项目列表（含类型信息）
     async getUserProjects(userId) {
         const result = await sql`
-            SELECT id, owner_name, relationship, theme, status, created_at, updated_at
+            SELECT id, owner_name, relationship, theme, status, project_type, vip_used, created_at, updated_at
             FROM projects WHERE user_id = ${userId}
             ORDER BY updated_at DESC
         `;
         return result;
-    },
-    
-    async delete(projectId) {
-        await sql`DELETE FROM projects WHERE id = ${projectId}`;
     }
 };
 

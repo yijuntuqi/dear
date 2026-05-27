@@ -9,6 +9,7 @@ import About from './pages/About';
 import './styles/global.css';
 import Upgrade from './pages/Upgrade';
 import AIChat from './pages/AIChat';
+import PreviewConfirm from './pages/PreviewConfirm';
 
 function App() {
     return (
@@ -24,6 +25,7 @@ function App() {
                         <Route path="/about" element={<About />} />
 						<Route path="/upgrade" element={<Upgrade />} />
 						<Route path="/ai-chat" element={<AIChat />} />
+						<Route path="/preview-confirm/:projectId" element={<PreviewConfirm />} />
                     </Routes>
                 </main>
                 <Footer />

@@ -28,10 +28,11 @@ export const authAPI = {
 };
 
 export const projectAPI = {
-    create: (data) => request('/projects', {
+    create: (data, projectType) => request('/projects', {
         method: 'POST',
-        body: JSON.stringify(data)
+        body: JSON.stringify({ ...data, projectType })
     }),
+    confirmDownload: (id) => request(`/projects/${id}/confirm-download`, { method: 'POST' }),
     update: (id, data) => request(`/projects/${id}`, {
         method: 'PUT',
         body: JSON.stringify(data)
