@@ -2,8 +2,16 @@ node_modules/
 .env
 .env.local
 dist/
-uploads/*
-!uploads/.gitkeep
 *.log
-server/uploads/
+
+# 用户上传的文件（不提交）
+server/uploads/photos/*
+server/uploads/audio/*
+!server/uploads/photos/.gitkeep
+!server/uploads/audio/.gitkeep
+
+server/uploads/export_*
+
+# 临时文件
 server/temp/
+
