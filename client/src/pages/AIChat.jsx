@@ -8,6 +8,8 @@ function AIChat() {
     const location = useLocation();
     const navigate = useNavigate();
     const chatEndRef = useRef(null);
+    const photoInputRef = useRef(null);
+    const audioInputRef = useRef(null);
     
     const projectId = location.state?.projectId;
     const ownerName = location.state?.ownerName || 'TA';
@@ -16,184 +18,165 @@ function AIChat() {
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
     const [applying, setApplying] = useState(false);
+    const [uploading, setUploading] = useState(false);
+    const [uploadedPhotos, setUploadedPhotos] = useState([]);
+    const [uploadedAudio, setUploadedAudio] = useState([]);
     
-    // 关系映射（用于显示中文）
     const relationshipMap = {
-        parent: '父母/子女',
-        lover: '伴侣',
-        friend: '朋友',
-        teacher: '老师',
-        family: '亲人'
+        parent: '父母/子女', lover: '伴侣', friend: '朋友',
+        teacher: '老师', family: '亲人', grandparent: '爷爷奶奶',
+        sibling: '兄弟姐妹', uncle: '叔叔/舅舅', aunt: '阿姨/姑姑', cousin: '堂/表亲'
     };
     
-    // 主题映射
     const themeMap = {
-        parent: '温馨亲情',
-        lover: '浪漫爱情',
-        friend: '真挚友情',
-        teacher: '庄重师恩',
-        family: '温暖亲人'
+        parent: '温馨亲情', lover: '浪漫爱情', friend: '真挚友情',
+        teacher: '庄重师恩', family: '温暖亲人'
     };
     
-    // 加载项目数据并构建欢迎消息
     const loadProjectAndBuildWelcome = async () => {
         try {
             const result = await projectAPI.get(projectId);
             const p = result.project;
             
-            // 构建故事信息
+            if (p.uploaded_photos) setUploadedPhotos(p.uploaded_photos);
+            if (p.uploaded_audio) setUploadedAudio(p.uploaded_audio);
+            
             let storiesText = '';
-            if (p.stories && p.stories.length > 0) {
-                const storyTitles = p.stories.map(s => `《${s.title}》`).join('、');
-                storiesText = `\n\n📖 你之前写了 ${p.stories.length} 个故事：${storyTitles}`;
+            if (p.stories?.length > 0) {
+                storiesText = '\n\n📖 你之前写了 ' + p.stories.length + ' 个故事：' +
+                    p.stories.map(s => '《' + s.title + '》').join('、');
             }
             
-            // 构建留言信息
             let messageText = '';
             if (p.message) {
-                const shortMsg = p.message.length > 50 ? p.message.substring(0, 50) + '...' : p.message;
-                messageText = `\n\n💌 你想对TA说的话：${shortMsg}`;
+                const short = p.message.length > 50 ? p.message.substring(0, 50) + '...' : p.message;
+                messageText = '\n\n💌 你想对TA说的话：' + short;
             }
             
-            // 构建署名信息
-            let authorText = '';
-            if (p.basic_info?.authorName) {
-                authorText = `\n\n✍️ 署名：${p.basic_info.authorName}`;
-            }
+            let mediaText = '';
+            if (uploadedPhotos.length > 0) mediaText += '\n\n📷 已上传 ' + uploadedPhotos.length + ' 张照片';
+            if (uploadedAudio.length > 0) mediaText += '\n\n🎵 已上传 ' + uploadedAudio.length + ' 个音频';
             
-            // 构建完整的欢迎消息
-            const welcomeMsg = `你好！👋 我来帮你为 **${p.owner_name}** 定制一个独一无二的纪念网页。
-
-我看到了你之前填写的信息：
-• 💝 被纪念者：${p.owner_name}
-• 👥 关系：${relationshipMap[p.relationship] || p.relationship}
-• 🎨 主题：${themeMap[p.theme] || p.theme}${storiesText}${messageText}${authorText}
-
----
-
-现在你可以告诉我：
-• 想要什么风格的感觉？（温馨、浪漫、活泼、庄重...）
-• 想加什么特别的内容？（比如相识时间进度条、照片墙、音乐播放器等）
-• 有什么想修改的文字或故事？
-
-说说你的想法，我来帮你实现！💝`;
+            const welcomeMsg = '你好！👋 我来帮你为 **' + p.owner_name + '** 定制专属网页。' +
+                '\n\n我看到了你填写的信息：' +
+                '\n• 💝 被纪念者：' + p.owner_name +
+                '\n• 👥 关系：' + (relationshipMap[p.relationship] || p.relationship) +
+                '\n• 🎨 主题：' + (themeMap[p.theme] || p.theme) +
+                storiesText + messageText + mediaText +
+                '\n\n---\n\n你可以告诉我想要什么风格、加什么内容，或者上传照片和音频！💝';
             
-            setMessages([{
-                role: 'assistant',
-                content: welcomeMsg
-            }]);
-            
-            // 保存欢迎消息到对话历史（可选）
-            // await aiAPI.saveConversation(projectId, [{ role: 'assistant', content: welcomeMsg }]);
-            
+            setMessages([{ role: 'assistant', content: welcomeMsg }]);
         } catch (err) {
-            console.error('加载项目失败:', err);
-            // 降级：简单的欢迎消息
-            setMessages([{
-                role: 'assistant',
-                content: `你好！👋 我来帮你为 **${ownerName}** 定制一个独一无二的纪念网页。
-
-你可以告诉我：
-• 你想要什么风格的感觉？
-• 有没有特别的回忆或故事想突出？
-• 喜欢什么颜色？
-
-或者直接说你想怎么改，我会一步步帮你完成！💝`
-            }]);
+            setMessages([{ role: 'assistant', content: '你好！👋 我来帮你为 **' + ownerName + '** 定制专属网页。\n\n你可以告诉我想要什么风格、加什么内容，或者上传照片和音频！💝' }]);
         }
     };
     
-    // 加载历史对话（如果有）
     const loadConversation = async () => {
         try {
             const result = await aiAPI.getConversation(projectId);
-            if (result.conversation && result.conversation.length > 0) {
+            if (result.conversation?.length > 0) {
                 setMessages(result.conversation);
                 return true;
             }
             return false;
-        } catch (err) {
-            console.error('加载对话失败:', err);
-            return false;
-        }
+        } catch (err) { return false; }
     };
     
     useEffect(() => {
-        if (!projectId) {
-            navigate('/dashboard');
-            return;
-        }
-        
-        // 先尝试加载历史对话，如果没有则构建欢迎消息
-        const initChat = async () => {
+        if (!projectId) { navigate('/dashboard'); return; }
+        (async () => {
             const hasHistory = await loadConversation();
-            if (!hasHistory) {
-                await loadProjectAndBuildWelcome();
-            }
-        };
-        
-        initChat();
+            if (!hasHistory) await loadProjectAndBuildWelcome();
+        })();
     }, [projectId]);
     
     useEffect(() => {
         chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
     
+    // 上传照片
+    const handlePhotoUpload = async (e) => {
+        const files = e.target.files;
+        if (!files.length) return;
+        const formData = new FormData();
+        for (let f of files) formData.append('photos', f);
+        
+        setUploading(true);
+        setMessages(prev => [...prev, { role: 'user', content: '📷 上传了 ' + files.length + ' 张照片' }]);
+        
+        try {
+            const token = localStorage.getItem('dear_token');
+            const res = await fetch('http://localhost:3001/api/upload/photos/' + projectId, {
+                method: 'POST', headers: { Authorization: 'Bearer ' + token }, body: formData
+            });
+            const data = await res.json();
+            if (data.success) {
+                setUploadedPhotos(data.photos);
+                setMessages(prev => [...prev, { role: 'assistant', content: '✅ 收到 ' + data.added + ' 张照片！已加入照片墙。' }]);
+            }
+        } catch (err) {
+            setMessages(prev => [...prev, { role: 'assistant', content: '❌ 上传失败，请重试' }]);
+        } finally {
+            setUploading(false);
+            photoInputRef.current.value = '';
+        }
+    };
+    
+    // 上传音频
+    const handleAudioUpload = async (e) => {
+        const files = e.target.files;
+        if (!files.length) return;
+        const formData = new FormData();
+        for (let f of files) formData.append('audio', f);
+        
+        setUploading(true);
+        setMessages(prev => [...prev, { role: 'user', content: '🎵 上传了 ' + files.length + ' 个音频' }]);
+        
+        try {
+            const token = localStorage.getItem('dear_token');
+            const res = await fetch('http://localhost:3001/api/upload/audio/' + projectId, {
+                method: 'POST', headers: { Authorization: 'Bearer ' + token }, body: formData
+            });
+            const data = await res.json();
+            if (data.success) {
+                setUploadedAudio(data.audio);
+                setMessages(prev => [...prev, { role: 'assistant', content: '✅ 收到 ' + data.added + ' 个音频！已嵌入网页。' }]);
+            }
+        } catch (err) {
+            setMessages(prev => [...prev, { role: 'assistant', content: '❌ 上传失败，请重试' }]);
+        } finally {
+            setUploading(false);
+            audioInputRef.current.value = '';
+        }
+    };
+    
     const handleSend = async () => {
         const text = input.trim();
         if (!text || loading) return;
-        
         setInput('');
         setMessages(prev => [...prev, { role: 'user', content: text }]);
         setLoading(true);
-        
         try {
             const result = await aiAPI.chat(projectId, text);
             setMessages(prev => [...prev, { role: 'assistant', content: result.reply }]);
         } catch (err) {
-            console.error('AI对话失败:', err);
-            setMessages(prev => [...prev, { 
-                role: 'assistant', 
-                content: '抱歉，AI服务暂时不可用，请稍后再试。' 
-            }]);
-        } finally {
-            setLoading(false);
-        }
+            setMessages(prev => [...prev, { role: 'assistant', content: '抱歉，AI服务暂不可用' }]);
+        } finally { setLoading(false); }
     };
     
     const handleApplySuggestions = async () => {
         setApplying(true);
         try {
-            const result = await aiAPI.applySuggestions(projectId);
-            if (result.content) {
-                setMessages(prev => [...prev, {
-                    role: 'assistant',
-                    content: '✅ 已根据我们的对话生成了最终内容！\n\n正在跳转到预览页面...'
-                }]);
-                
-                // 跳转到预览确认页
-                setTimeout(() => {
-                    navigate(`/preview-confirm/${projectId}`);
-                }, 1500);
-            }
-        } catch (err) {
-            alert('应用失败：' + err.message);
-        } finally {
-            setApplying(false);
-        }
-    };
-    
-    const handleKeyDown = (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            handleSend();
-        }
+            await aiAPI.applySuggestions(projectId);
+            setMessages(prev => [...prev, { role: 'assistant', content: '✅ 已生成最终内容！正在跳转...' }]);
+            setTimeout(() => navigate('/preview-confirm/' + projectId), 1500);
+        } catch (err) { alert('应用失败：' + err.message); }
+        finally { setApplying(false); }
     };
     
     return (
         <div className="ai-chat-page">
             <BackButton to="/dashboard" label="返回项目" />
-            
             <div className="ai-chat-container">
                 <div className="ai-chat-header">
                     <h2>🤖 AI定制助手</h2>
@@ -202,16 +185,11 @@ function AIChat() {
                 
                 <div className="ai-chat-messages">
                     {messages.map((msg, i) => (
-                        <div key={i} className={`chat-bubble ${msg.role}`}>
-                            <div className="chat-avatar">
-                                {msg.role === 'assistant' ? '🤖' : '👤'}
-                            </div>
+                        <div key={i} className={'chat-bubble ' + msg.role}>
+                            <div className="chat-avatar">{msg.role === 'assistant' ? '🤖' : '👤'}</div>
                             <div className="chat-content">
                                 {msg.content.split('\n').map((line, j) => (
-                                    <span key={j}>
-                                        {line}
-                                        {j < msg.content.split('\n').length - 1 && <br />}
-                                    </span>
+                                    <span key={j}>{line}{j < msg.content.split('\n').length - 1 && <br />}</span>
                                 ))}
                             </div>
                         </div>
@@ -219,41 +197,30 @@ function AIChat() {
                     {loading && (
                         <div className="chat-bubble assistant">
                             <div className="chat-avatar">🤖</div>
-                            <div className="chat-content typing">
-                                <span className="dot" />
-                                <span className="dot" />
-                                <span className="dot" />
-                            </div>
+                            <div className="chat-content typing"><span className="dot"/><span className="dot"/><span className="dot"/></div>
                         </div>
                     )}
                     <div ref={chatEndRef} />
                 </div>
                 
+                {/* 上传按钮 */}
+                <div className="ai-chat-upload-bar">
+                    <input type="file" ref={photoInputRef} onChange={handlePhotoUpload} accept="image/*" multiple style={{display:'none'}} />
+                    <input type="file" ref={audioInputRef} onChange={handleAudioUpload} accept="audio/*" multiple style={{display:'none'}} />
+                    <button className="upload-trigger-btn" onClick={() => photoInputRef.current?.click()} disabled={uploading}>📷 上传照片</button>
+                    <button className="upload-trigger-btn" onClick={() => audioInputRef.current?.click()} disabled={uploading}>🎵 上传音频</button>
+                    {uploadedPhotos.length > 0 && <span className="upload-count">📷 {uploadedPhotos.length}/20</span>}
+                    {uploadedAudio.length > 0 && <span className="upload-count">🎵 {uploadedAudio.length}/3</span>}
+                </div>
+                
                 <div className="ai-chat-input-area">
-                    <textarea
-                        value={input}
-                        onChange={e => setInput(e.target.value)}
-                        onKeyDown={handleKeyDown}
-                        placeholder="描述你的想法，比如：我希望风格更温馨一点..."
-                        rows={2}
-                        disabled={loading}
-                    />
-                    <button 
-                        className="btn btn-primary" 
-                        onClick={handleSend}
-                        disabled={loading || !input.trim()}
-                    >
-                        发送
-                    </button>
+                    <textarea value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => { if (e.key==='Enter'&&!e.shiftKey) { e.preventDefault(); handleSend(); }}} placeholder="描述你的想法..." rows={2} disabled={loading} />
+                    <button className="btn btn-primary" onClick={handleSend} disabled={loading || !input.trim()}>发送</button>
                 </div>
                 
                 {messages.length > 2 && (
                     <div className="ai-chat-actions">
-                        <button 
-                            className="btn btn-primary"
-                            onClick={handleApplySuggestions}
-                            disabled={applying}
-                        >
+                        <button className="btn btn-primary" onClick={handleApplySuggestions} disabled={applying}>
                             {applying ? '⏳ 正在生成...' : '✨ 应用AI建议，生成网页'}
                         </button>
                     </div>

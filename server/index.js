@@ -9,6 +9,7 @@ const aiRoutes = require('./routes/ai');
 const exportRoutes = require('./routes/export');
 const { testConnection } = require('./lib/db');
 const orderRoutes = require('./routes/order');
+const uploadRoutes = require('./routes/upload');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -26,6 +27,7 @@ app.use('/api/projects', projectRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/export', exportRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/upload', uploadRoutes);
 
 // 健康检查
 app.get('/api/health', (req, res) => {
