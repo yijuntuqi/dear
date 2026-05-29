@@ -42,73 +42,95 @@ function PreviewConfirm() {
     };
     
     const handleDownloadZip = async () => {
-		// VIP项目且未使用 → 先确认
 		if (project.project_type === 'vip' && !project.vip_used) {
-			if (!window.confirm('确认创建成功？这将消耗1次VIP权益。')) {
-				return;
-			}
-			// 用户确认后，标记VIP已使用
+			if (!window.confirm('确认创建成功？这将消耗1次VIP权益。')) return;
 			try {
 				await projectAPI.confirmDownload(project.id);
-				setProject(prev => ({ ...prev, vip_used: true, status: 'completed' }));
-			} catch (err) {
-				alert('确认失败，请重试');
-				return;
-			}
+				setProject(prev => ({ ...prev, vip_used: true }));
+			} catch (err) { alert('确认失败'); return; }
 		}
 		
-		// 下载
-		const link = document.createElement('a');
-		link.href = `http://localhost:3001/api/export/source/${projectId}`;
-		link.download = `Dear_${project?.owner_name || 'dear'}_源码包.zip`;
-		document.body.appendChild(link);
-		link.click();
-		document.body.removeChild(link);
+		try {
+			const token = localStorage.getItem('dear_token');
+			const res = await fetch(`http://localhost:3001/api/export/source/${projectId}`, {
+				headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+			});
+			if (!res.ok) throw new Error('下载失败');
+			
+			const blob = await res.blob();
+			const url = window.URL.createObjectURL(blob);
+			const a = document.createElement('a');
+			a.href = url;
+			a.download = `Dear_${project?.owner_name || 'dear'}_源码包.zip`;
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
+			window.URL.revokeObjectURL(url);
+			
+			await projectAPI.updateStatus(projectId, 'completed');
+			setProject(prev => ({ ...prev, status: 'completed' }));
+		} catch (err) {
+			console.error('下载失败:', err);
+		}
 	};
 
-	const handleDownloadHTML = async () => {
-		// 同样逻辑
+    const handleDownloadHTML = async () => {
 		if (project.project_type === 'vip' && !project.vip_used) {
-			if (!window.confirm('确认创建成功？这将消耗1次VIP权益。')) {
-				return;
-			}
+			if (!window.confirm('确认创建成功？这将消耗1次VIP权益。')) return;
 			try {
 				await projectAPI.confirmDownload(project.id);
-				setProject(prev => ({ ...prev, vip_used: true, status: 'completed' }));
-			} catch (err) {
-				alert('确认失败，请重试');
-				return;
-			}
+				setProject(prev => ({ ...prev, vip_used: true }));
+			} catch (err) { alert('确认失败'); return; }
 		}
 		
-		const link = document.createElement('a');
-		link.href = `http://localhost:3001/api/export/html/${projectId}`;
-		link.download = `Dear_${project?.owner_name || 'dear'}.html`;
-		document.body.appendChild(link);
-		link.click();
-		document.body.removeChild(link);
+		try {
+			const token = localStorage.getItem('dear_token');
+			const res = await fetch(`http://localhost:3001/api/export/html/${projectId}`, {
+				headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+			});
+			if (!res.ok) throw new Error('下载失败');
+			
+			const blob = await res.blob();
+			const url = window.URL.createObjectURL(blob);
+			const a = document.createElement('a');
+			a.href = url;
+			a.download = `Dear_${project?.owner_name || 'dear'}.html`;
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
+			window.URL.revokeObjectURL(url);
+			
+			await projectAPI.updateStatus(projectId, 'completed');
+			setProject(prev => ({ ...prev, status: 'completed' }));
+		} catch (err) {
+			console.error('下载失败:', err);
+		}
 	};
     
     const handleCopyHTML = async () => {
-		// VIP项目且未使用 → 先确认
-		if (project.project_type !== 'free' && !project.vip_used) {
-			if (!window.confirm('确认创建成功？这将消耗1次VIP权益。')) {
-				return;
-			}
+		if (project.project_type === 'vip' && !project.vip_used) {
+			if (!window.confirm('确认创建成功？这将消耗1次VIP权益。')) return;
 			try {
 				await projectAPI.confirmDownload(project.id);
-				setProject(prev => ({ ...prev, vip_used: true, status: 'completed' }));
-			} catch (err) {
-				alert('确认失败，请重试');
-				return;
-			}
+				setProject(prev => ({ ...prev, vip_used: true }));
+			} catch (err) { alert('确认失败'); return; }
 		}
 		
-		navigator.clipboard.writeText(generatedHtml).then(() => {
+		try {
+			await navigator.clipboard.writeText(generatedHtml);
 			alert('HTML代码已复制！');
-		}).catch(() => {
+			// 标记完成（带日志）
+			console.log('🔍 准备标记完成, projectId:', projectId);
+			try {
+				const result = await projectAPI.updateStatus(projectId, 'completed');
+				console.log('✅ 标记完成成功:', result);
+				setProject(prev => ({ ...prev, status: 'completed' }));
+			} catch (err) {
+				console.error('❌ 标记完成失败:', err.message, err);
+			}
+		} catch (err) {
 			alert('复制失败，请下载HTML文件');
-		});
+		}
 	};
     
     if (loading) return <div className="container">加载中...</div>;

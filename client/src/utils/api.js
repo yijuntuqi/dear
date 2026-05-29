@@ -8,8 +8,12 @@ async function request(url, options = {}) {
         ...options.headers
     };
     
+    console.log(`📡 请求: ${options.method || 'GET'} ${url}`);
+    
     const res = await fetch(`${API_BASE}${url}`, { ...options, headers });
     const data = await res.json();
+    
+    console.log(`📡 响应: ${res.status}`, data);
     
     if (!res.ok) {
         throw new Error(data.error || '请求失败');
@@ -42,6 +46,10 @@ export const projectAPI = {
     get: (id) => request(`/projects/${id}`),
     list: () => request('/projects'),
     render: (id) => request(`/projects/${id}/render`, { method: 'POST' }),
+	updateStatus: (id, status) => request(`/projects/${id}/status`, {
+		method: 'PUT',
+		body: JSON.stringify({ status })
+	}),
     delete: (id) => request(`/projects/${id}`, { method: 'DELETE' })
 };
 
