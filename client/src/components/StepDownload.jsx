@@ -1,8 +1,11 @@
 import { exportAPI } from '../utils/api';
 import './StepDownload.css';
+import { useNavigate } from 'react-router-dom';
 
 function StepDownload({ project, generatedHtml, onBack }) {
     
+	const navigate = useNavigate();
+	
     const handleDownloadZip = () => {
         const link = document.createElement('a');
         link.href = exportAPI.downloadSource(project.id);
@@ -59,6 +62,13 @@ function StepDownload({ project, generatedHtml, onBack }) {
                     <h3>复制HTML代码</h3>
                     <p>复制完整的网页源代码</p>
                 </div>
+				{project.project_type === 'mvp' && (
+					<div className="download-card card" onClick={() => navigate(`/pack/${project.id}`)}>
+						<span className="download-icon">📦</span>
+						<h4>打包 APP</h4>
+						<p>生成 Windows EXE / Android APK</p>
+					</div>
+				)}
             </div>
             
             <div className="upgrade-notice card">

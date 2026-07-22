@@ -7,7 +7,7 @@ async function callAI(messages, maxTokens = 2000) {
             {
                 model: "gpt-3.5-turbo",
                 messages: messages,
-                temperature: 0.8,
+                temperature: 0.7,
                 max_tokens: maxTokens
             },
             {
@@ -15,33 +15,29 @@ async function callAI(messages, maxTokens = 2000) {
                     'Authorization': `Bearer ${process.env.CHATANYWHERE_API_KEY}`,
                     'Content-Type': 'application/json'
                 },
-                timeout: 30000
+                timeout: 60000  // 增加超时时间，生成HTML可能需要更久
             }
         );
         return response.data.choices[0].message.content;
     } catch (error) {
         console.log('ChatAnywhere 失败，切换到 Kimi...');
-        try {
-            const kimiResponse = await axios.post(
-                `${process.env.KIMI_BASE_URL}/chat/completions`,
-                {
-                    model: process.env.KIMI_MODEL,
-                    messages: messages,
-                    temperature: 0.8,
-                    max_tokens: maxTokens
+        const kimiResponse = await axios.post(
+            `${process.env.KIMI_BASE_URL}/chat/completions`,
+            {
+                model: process.env.KIMI_MODEL,
+                messages: messages,
+                temperature: 0.7,
+                max_tokens: maxTokens
+            },
+            {
+                headers: {
+                    'Authorization': `Bearer ${process.env.KIMI_API_KEY}`,
+                    'Content-Type': 'application/json'
                 },
-                {
-                    headers: {
-                        'Authorization': `Bearer ${process.env.KIMI_API_KEY}`,
-                        'Content-Type': 'application/json'
-                    },
-                    timeout: 30000
-                }
-            );
-            return kimiResponse.data.choices[0].message.content;
-        } catch (kimiError) {
-            throw new Error('所有AI服务暂时不可用');
-        }
+                timeout: 60000
+            }
+        );
+        return kimiResponse.data.choices[0].message.content;
     }
 }
 

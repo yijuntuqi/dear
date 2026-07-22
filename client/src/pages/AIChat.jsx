@@ -106,7 +106,7 @@ function AIChat() {
         
         try {
             const token = localStorage.getItem('dear_token');
-            const res = await fetch('http://localhost:3001/api/upload/photos/' + projectId, {
+            const res = await fetch('/api/upload/photos/' + projectId, {
                 method: 'POST', headers: { Authorization: 'Bearer ' + token }, body: formData
             });
             const data = await res.json();
@@ -134,7 +134,7 @@ function AIChat() {
         
         try {
             const token = localStorage.getItem('dear_token');
-            const res = await fetch('http://localhost:3001/api/upload/audio/' + projectId, {
+            const res = await fetch('/api/upload/audio/' + projectId, {
                 method: 'POST', headers: { Authorization: 'Bearer ' + token }, body: formData
             });
             const data = await res.json();

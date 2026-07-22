@@ -23,16 +23,17 @@ router.post('/', authMiddleware, async (req, res) => {
     try {
         const { projectType, currentStep } = req.body;
         
-        // 如果要创建VIP项目，只检查用户是不是VIP（不检查使用次数）
-        if (projectType === 'vip') {
+        // 如果要创建付费项目（VIP 或 MVP），检查用户是否有对应权限
+        if (projectType === 'vip' || projectType === 'mvp') {
             const user = await userDB.getUser(req.userId);
             if (!user) {
                 return res.status(404).json({ error: '用户不存在' });
             }
-            if (user.plan_type !== 'vip') {
-                return res.status(403).json({ error: '请先升级VIP' });
+            // 只有付费用户（VIP 或 MVP）才能创建付费项目
+            if (user.plan_type === 'free') {
+                return res.status(403).json({ error: '请先升级套餐' });
             }
-            // 注意：不检查 vip_used！VIP项目允许创建，下载时才消耗权益
+            // 注意：不检查 vip_used！付费项目允许创建，下载时才消耗权益
         }
         
         const project = await projectDB.create(req.userId, req.body, projectType || 'free');
@@ -143,7 +144,7 @@ router.post('/:id/render', async (req, res) => {
     }
 });
 
-// 确认下载（消耗VIP权益）
+// 确认下载（消耗付费权益）
 router.post('/:id/confirm-download', authMiddleware, async (req, res) => {
     try {
         const project = await projectDB.getById(req.params.id);
@@ -151,13 +152,13 @@ router.post('/:id/confirm-download', authMiddleware, async (req, res) => {
             return res.status(404).json({ error: '项目不存在' });
         }
         
-        // 标记项目VIP已使用
+        // 标记项目权益已使用
         await projectDB.markVipUsed(req.params.id);
         
-        // 如果是VIP项目，下载后降级用户
-        if (project.project_type === 'vip') {
+        // 如果是付费项目（VIP 或 MVP），下载后降级用户为 free
+        if (project.project_type === 'vip' || project.project_type === 'mvp') {
             await userDB.upgradePlan(project.user_id, 'free');
-            console.log(`✅ 用户 ${project.user_id} VIP权益已消耗，自动降级为free`);
+            console.log(`✅ 用户 ${project.user_id} ${project.project_type.toUpperCase()}权益已消耗，自动降级为free`);
         }
         
         res.json({ success: true });

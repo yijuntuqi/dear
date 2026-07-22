@@ -44,7 +44,7 @@ function Create() {
 			const result = await projectAPI.create(formData, projectType);
 			setProject(result.project);
 			
-			if (projectType === 'vip') {
+			if (projectType === 'vip' || projectType === 'mvp') {
 				navigate('/ai-chat', { 
 					state: { 
 						projectId: result.project.id, 
@@ -101,13 +101,18 @@ function Create() {
                         <div className="choice-card card" onClick={() => { setProjectType('free'); setStep(1); }}>
                             <span className="choice-icon">📝</span>
                             <h3>免费创建</h3>
-                            <p>手动填写故事和留言，不消耗VIP权益</p>
+                            <p>手动填写故事和留言，不消耗VIP/MVP权益</p>
                         </div>
                         <div className="choice-card card featured" onClick={() => { setProjectType('vip'); setStep(1); }}>
                             <span className="choice-icon">🤖</span>
                             <h3>使用VIP权益 ✨</h3>
-                            <p>AI对话深度定制，智能生成内容，可加进度条等高级功能</p>
+                            <p>AI对话深度定制，智能生成内容，可自主选择加进度条等高级功能</p>
                         </div>
+						<div className="choice-card card" onClick={() => { setProjectType('mvp'); setStep(1); }}>
+							<span className="choice-icon">🚀</span>
+							<h3>使用 MVP 权益 ✨</h3>
+							<p>VIP全部功能 + Windows/Android APP打包</p>
+						</div>
                     </div>
                 </div>
             </div>

@@ -10,6 +10,7 @@ import './styles/global.css';
 import Upgrade from './pages/Upgrade';
 import AIChat from './pages/AIChat';
 import PreviewConfirm from './pages/PreviewConfirm';
+import PackApp from './pages/PackApp';
 
 function App() {
     return (
@@ -26,6 +27,7 @@ function App() {
 						<Route path="/upgrade" element={<Upgrade />} />
 						<Route path="/ai-chat" element={<AIChat />} />
 						<Route path="/preview-confirm/:projectId" element={<PreviewConfirm />} />
+						<Route path="/pack/:projectId" element={<PackApp />} />
                     </Routes>
                 </main>
                 <Footer />

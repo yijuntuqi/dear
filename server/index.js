@@ -11,6 +11,8 @@ const { testConnection } = require('./lib/db');
 const orderRoutes = require('./routes/order');
 const uploadRoutes = require('./routes/upload');
 
+const packRoutes = require('./routes/pack');
+
 const app = express();
 const PORT = process.env.PORT || 3001;
 
@@ -28,6 +30,7 @@ app.use('/api/ai', aiRoutes);
 app.use('/api/export', exportRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/pack', packRoutes);
 
 // 健康检查
 app.get('/api/health', (req, res) => {

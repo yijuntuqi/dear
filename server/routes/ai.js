@@ -1,7 +1,8 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const { projectDB, userDB } = require('../lib/db');
-const { generateContent, aiChat, generateColorScheme } = require('../lib/ai');
+const { callAI, generateContent, aiChat, generateColorScheme } = require('../lib/ai');
+const { renderPage } = require('../lib/renderer');
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'dear-secret';
@@ -21,7 +22,7 @@ function authMiddleware(req, res, next) {
 function vipMiddleware(req, res, next) {
     userDB.getUser(req.userId).then(user => {
         if (!user || user.plan_type === 'free') {
-            return res.status(403).json({ error: '此功能需要VIP会员，请先升级' });
+            return res.status(403).json({ error: '此功能需要VIP或MVP会员，请先升级' });
         }
         next();
     });
@@ -139,7 +140,7 @@ router.post('/chat', authMiddleware, vipMiddleware, async (req, res) => {
     }
 });
 
-// AI根据对话历史生成最终内容
+// AI根据对话历史生成最终完整HTML
 router.post('/apply-suggestions', authMiddleware, vipMiddleware, async (req, res) => {
     try {
         const { projectId } = req.body;
@@ -147,97 +148,56 @@ router.post('/apply-suggestions', authMiddleware, vipMiddleware, async (req, res
         const project = await projectDB.getById(projectId);
         if (!project) return res.status(404).json({ error: '项目不存在' });
         
+        // 直接引用 AI 模块
+        const aiModule = require('../lib/ai');
+        
+        // 1. 获取基础模板HTML
+        const baseTemplate = await renderPage(project);
+        
+        // 2. 获取对话历史
         const conversationHistory = project.ai_conversation || [];
         
-        // 提取对话中用户提到的关键信息
-        const conversationText = conversationHistory
-            .map(msg => `[${msg.role}]: ${msg.content}`)
-            .join('\n');
-        
-        const messages = [
-            {
-                role: "system",
-                content: `你是一个内容生成助手。根据对话历史，输出最终的网页内容JSON。
+        // 3. 构建Prompt
+        const prompt = `你是一个专业的网页设计师。请生成一个完整的纪念网页HTML。
 
-## 已有内容（不要丢失）：
+## 基础模板（参考此模板的结构和样式）：
+\`\`\`html
+${baseTemplate}
+\`\`\`
+
+## 用户信息：
+- 被纪念者：${project.owner_name}
+- 关系：${project.relationship}
 - 故事：${JSON.stringify(project.stories || [])}
-- 留言：${JSON.stringify(project.message || '')}
-- 基本信息：${JSON.stringify(project.basic_info || {})}
+- 留言：${project.message || ''}
+- 署名：${project.basic_info?.authorName || '爱你的人'}
 
-## 任务：
-根据对话历史中用户的新需求，修改/新增内容。
+## 对话历史（用户的所有额外要求）：
+${JSON.stringify(conversationHistory)}
 
-## 对话历史中可能包含的需求：
-- "加进度条" → 在basicInfo中添加 meetDate 和 timelineLabel
-- "修改故事内容" → 修改stories数组
-- "改留言" → 修改message
-- "改配色" → 添加colorScheme
+## 要求：
+1. 基于模板修改，保留基本结构
+2. 根据对话历史添加用户要求的内容
+3. 不要丢失已有的故事、留言、署名
+4. 输出完整HTML，直接可浏览器打开
+5. 只输出HTML代码，不要任何解释`;
 
-## 返回JSON格式：
-{
-  "stories": [...],        // 最终的故事列表
-  "message": "...",        // 最终的留言
-  "basicInfo": {           // 基本信息（合并新需求）
-    "meetDate": "2020-01-01",    // 如果用户提到了相识日期
-    "timelineLabel": "..."       // 进度条文案
-  },
-  "colorScheme": {...}     // 如果用户提到了配色
-}
-
-## 重要：
-1. 保留原有内容，只在用户明确要求时才修改
-2. 进度条的meetDate从对话中提取，格式YYYY-MM-DD
-3. timelineLabel如果用户没指定，用默认的"和你相识后的每一秒我都感到幸福"`
-            },
-            {
-                role: "user",
-                content: `对话历史：\n${conversationText}\n\n请输出最终的网页内容JSON。`
-            }
-        ];
+        // 调用AI
+        const html = await aiModule.callAI([{ role: 'user', content: prompt }], 4000);
         
-        const reply = await require('../lib/ai').callAI(messages, 2000);
+        // 清理
+        let cleanHtml = html.replace(/^```html\s*/i, '').replace(/\s*```$/, '').trim();
         
-        // 解析AI返回的JSON
-        let generatedContent = {};
-        try {
-            const jsonMatch = reply.match(/\{[\s\S]*\}/);
-            if (jsonMatch) {
-                generatedContent = JSON.parse(jsonMatch[0]);
-            }
-        } catch (e) {
-            console.error('JSON解析失败:', e);
-            return res.status(500).json({ error: 'AI返回格式异常，请重试' });
-        }
-        
-        // 合并更新项目数据
-        const updateData = {};
-        
-        if (generatedContent.stories && generatedContent.stories.length > 0) {
-            updateData.stories = generatedContent.stories;
-        }
-        if (generatedContent.message) {
-            updateData.message = generatedContent.message;
-        }
-        if (generatedContent.basicInfo) {
-            updateData.basicInfo = {
-                ...project.basic_info,
-                ...generatedContent.basicInfo
-            };
-        }
-        if (generatedContent.colorScheme) {
-            updateData.colorScheme = generatedContent.colorScheme;
-        }
-        
-        await projectDB.update(projectId, updateData);
-        
-        res.json({ 
-            success: true, 
-            content: generatedContent,
-            message: '内容已更新，请预览网页'
+        // 保存到数据库
+        await projectDB.update(projectId, {
+            generatedHtml: cleanHtml,
+            status: 'completed'
         });
+        
+        res.json({ success: true, html: cleanHtml });
     } catch (error) {
         console.error('应用AI建议失败:', error);
-        res.status(500).json({ error: '应用失败: ' + error.message });
+        res.status(500).json({ error: '生成失败: ' + error.message });
     }
 });
 

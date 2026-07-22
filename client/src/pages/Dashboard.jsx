@@ -163,6 +163,14 @@ function Dashboard() {
                                         >
                                             📥 下载
                                         </button>
+										{project.project_type === 'mvp' && project.status === 'completed' && (
+											<button
+												className="btn btn-primary btn-small"
+												onClick={() => navigate(`/pack/${project.id}`)}
+											>
+												📦 下载 APP
+											</button>
+										)}
                                     </>
                                 )}
                                 
