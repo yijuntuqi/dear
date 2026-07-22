@@ -15,3 +15,17 @@ server/uploads/export_*
 # 临时文件
 server/temp/
 
+# Tauri 生成的文件
+tauri/src-tauri/gen/
+tauri/src-tauri/target/
+
+# 用户上传的安装包
+server/uploads/packages/
+
+# 个人开发笔记（可选，建议加）
+项目开发信息/
+*.docx
+*.txt
+*.lnk
+*.png
+*.jpg
